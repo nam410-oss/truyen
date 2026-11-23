@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ĐọcTruyệnChữ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Noto+Serif:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script>
+  // Áp dụng chế độ nền ngay khi tải để tránh nháy trắng.
+  try { const t = JSON.parse(localStorage.getItem("reader:settings") || "{}").theme; if (t && t !== "light") document.documentElement.className = "pre-" + t; } catch {}
+</script>
+<style>
+  html.pre-dark body { background: #161616; }
+  html.pre-sepia body { background: #f4ecd8; }
+</style>
+</head>
+<body>
+
+<main class="reader" id="page"></main>
+
+<script src="data/stories.js"></script>
+<script src="assets/app.js"></script>
+<script>
+  renderChrome();
+  const story = findStory(params.get("s")) || STORIES[0];
+  const n = parseInt(params.get("c"), 10) || 1;
+  const idx = story ? story.chapters.findIndex((c) => c.n === n) : -1;
+
+  if (!story || idx < 0) {
+    $("#page").innerHTML = `<p class="empty">Không tìm thấy chương này. <a href="${story ? storyUrl(story) : "index.html"}">Quay lại</a></p>`;
+  } else {
+    const ch = story.chapters[idx];
+    const prev = story.chapters[idx - 1], next = story.chapters[idx + 1];
+    document.title = `Chương ${ch.n}: ${ch.title} - ${story.title}`;
+    store.set(`progress:${story.slug}`, ch.n);
+
+    const nav = (pos) => `
+      <nav class="chap-nav" aria-label="Điều hướng chương">
+        <a class="btn" href="${prev ? chapterUrl(story, prev.n) : "#"}" aria-disabled="${!prev}">‹ Chương trước</a>
+        <a class="btn ghost icon" href="${storyUrl(story)}#chapters" title="Danh sách chương" aria-label="Danh sách chương">☰</a>
+        ${pos === "top" ? `<button class="btn ghost icon" id="toggle-settings" title="Cài đặt đọc" aria-label="Cài đặt đọc" aria-expanded="false">Aa</button>` : ""}
+        <a class="btn" href="${next ? chapterUrl(story, next.n) : "#"}" aria-disabled="${!next}">Chương sau ›</a>
+      </nav>`;
+
+    const body = ch.paras.map((p) => /^\*(\s*\*){2,}$/.test(p) ? `<p class="scene">* * *</p>` : `<p>${esc(p)}</p>`).join("");
+
+    $("#page").innerHTML = `
+      <nav class="crumbs"><a href="index.html">Trang chủ</a><span>›</span><a href="${storyUrl(story)}">${esc(story.title)}</a><span>›</span>Chương ${ch.n}</nav>
+      <a class="story-name" href="${storyUrl(story)}">${esc(story.title)}</a>
+      <h1>Chương ${ch.n}: ${esc(ch.title)}</h1>
+      <div class="meta">${ch.paras.join(" ").split(/\s+/).length.toLocaleString("vi-VN")} chữ · Chương ${ch.n}/${story.chapters.length}</div>
+      ${nav("top")}
+      <div class="settings" id="settings" hidden>
+        <div class="row"><span class="label">Cỡ chữ</span>
+          <span class="seg"><button data-fs="-1" aria-label="Giảm cỡ chữ">A−</button><span class="val" id="fs-val"></span><button data-fs="1" aria-label="Tăng cỡ chữ">A+</button></span></div>
+        <div class="row"><span class="label">Font chữ</span>
+          <span class="seg" id="font-seg"><button data-font="serif">Có chân</button><button data-font="sans">Không chân</button></span></div>
+        <div class="row"><span class="label">Màu nền</span>
+          <span class="seg" id="theme-seg"><button data-theme="light">Trắng</button><button data-theme="sepia">Vàng giấy</button><button data-theme="dark">Đen</button></span></div>
+      </div>
+      <article class="content" id="content">${body}</article>
+      ${next ? "" : `<p class="end-note">Bạn đã đọc đến chương mới nhất. Chương tiếp theo sẽ sớm được cập nhật!</p>`}
+      ${nav("bottom")}
+      <p class="kbd-hint">Mẹo: dùng phím ← → để chuyển chương</p>`;
+
+    // ---- Cài đặt đọc (lưu localStorage) ----
+    const settings = Object.assign({ fs: 20, font: "serif", theme: "light" }, store.get("reader:settings", {}));
+    function apply() {
+      settings.fs = Math.min(32, Math.max(14, settings.fs));
+      $("#content").style.setProperty("--fs", settings.fs + "px");
+      $("#content").classList.toggle("sans", settings.font === "sans");
+      document.body.classList.remove("theme-sepia", "theme-dark");
+      if (settings.theme !== "light") document.body.classList.add("theme-" + settings.theme);
+      document.documentElement.className = "";
+      $("#fs-val").textContent = settings.fs;
+      document.querySelectorAll("#font-seg button").forEach((b) => b.classList.toggle("on", b.dataset.font === settings.font));
+      document.querySelectorAll("#theme-seg button").forEach((b) => b.classList.toggle("on", b.dataset.theme === settings.theme));
+      store.set("reader:settings", settings);
+    }
+    $("#settings").addEventListener("click", (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.fs) settings.fs += Number(b.dataset.fs) * 2;
+      if (b.dataset.font) settings.font = b.dataset.font;
+      if (b.dataset.theme) settings.theme = b.dataset.theme;
+      apply();
+    });
+    $("#toggle-settings").addEventListener("click", (e) => {
+      const panel = $("#settings");
+      panel.hidden = !panel.hidden;
+      e.currentTarget.setAttribute("aria-expanded", String(!panel.hidden));
+    });
+    apply();
+
+    // ---- Phím tắt ← → ----
+    document.addEventListener("keydown", (e) => {
+      if (e.target.closest("input, textarea, select") || e.altKey || e.ctrlKey || e.metaKey) return;
+      if (e.key === "ArrowLeft" && prev) location.href = chapterUrl(story, prev.n);
+      if (e.key === "ArrowRight" && next) location.href = chapterUrl(story, next.n);
+    });
+  }
+</script>
+</body>
+</html>

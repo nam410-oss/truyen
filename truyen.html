@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ĐọcTruyệnChữ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Noto+Serif:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<main class="container" id="page"></main>
+
+<script src="data/stories.js"></script>
+<script src="assets/app.js"></script>
+<script>
+  renderChrome();
+  const story = findStory(params.get("s")) || STORIES[0];
+
+  if (!story) {
+    $("#page").innerHTML = `<p class="empty">Không tìm thấy truyện. <a href="index.html">Về trang chủ</a></p>`;
+  } else {
+    document.title = `${story.title} - ${SITE_NAME}`;
+    const total = story.chapters.length;
+    const first = story.chapters[0], last = story.chapters[total - 1];
+    const progress = getProgress(story);
+
+    $("#page").innerHTML = `
+      <nav class="crumbs"><a href="index.html">Trang chủ</a><span>›</span>${esc(story.title)}</nav>
+      <section class="story-head">
+        <div class="card">${coverHTML(story, { badge: story.genres[0] })}</div>
+        <div>
+          <h1>${esc(story.title)}</h1>
+          <ul class="info">
+            <li><b>Tác giả</b>${esc(story.author || "Đang cập nhật")}</li>
+            <li><b>Người dịch</b>${esc(story.translator || "Đang cập nhật")}</li>
+            <li><b>Thể loại</b>${story.genres.map((g) => `<span class="tag">${esc(g)}</span>`).join("")}</li>
+            <li><b>Trạng thái</b><span class="${story.status === "hoan-thanh" ? "status-full" : "status-on"}">${statusText(story)}</span></li>
+            <li><b>Số chương</b>${total} chương</li>
+            <li><b>Cập nhật</b>${relTime(story.updatedAt)} · <a href="${chapterUrl(story, last.n)}" style="color:var(--primary)">Chương ${last.n}: ${esc(last.title)}</a></li>
+          </ul>
+          <div class="actions">
+            ${progress && progress !== first.n
+              ? `<a class="btn" href="${chapterUrl(story, progress)}">Đọc tiếp Chương ${progress}</a>
+                 <a class="btn ghost" href="${chapterUrl(story, first.n)}">Đọc từ đầu</a>`
+              : `<a class="btn" href="${chapterUrl(story, first.n)}">Đọc từ đầu</a>`}
+            <a class="btn ghost" href="${chapterUrl(story, last.n)}">Chương mới nhất</a>
+          </div>
+        </div>
+      </section>
+
+      <div class="sec-title"><h2>Giới thiệu</h2></div>
+      <p class="desc">${esc(story.description || "")}</p>
+
+      <div class="sec-title" id="chapters"><h2>Danh sách chương (${total})</h2><button class="tool" id="sort">Mới nhất trước ↓</button></div>
+      <ul class="chap-list" id="chap-list"></ul>`;
+
+    let desc = false;
+    function renderList() {
+      const list = desc ? [...story.chapters].reverse() : story.chapters;
+      $("#chap-list").innerHTML = list.map((c) =>
+        `<li><a class="${c.n === progress ? "current" : ""}" href="${chapterUrl(story, c.n)}" title="Chương ${c.n}: ${esc(c.title)}">Chương ${c.n}: ${esc(c.title)}</a></li>`
+      ).join("");
+      $("#sort").textContent = desc ? "Cũ nhất trước ↑" : "Mới nhất trước ↓";
+    }
+    $("#sort").addEventListener("click", () => { desc = !desc; renderList(); });
+    renderList();
+  }
+</script>
+</body>
+</html>

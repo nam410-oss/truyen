@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ĐọcTruyệnChữ - Đọc truyện online miễn phí</title>
+<meta name="description" content="Đọc truyện chữ online miễn phí, không quảng cáo. Truyện tiên hiệp, huyền huyễn được cập nhật liên tục.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Noto+Serif:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<section class="hot">
+  <div class="hot-head">
+    <div class="container">
+      <h2>Truyện Hot</h2>
+      <select id="hot-filter" aria-label="Lọc thể loại"><option value="">Tất cả</option></select>
+    </div>
+  </div>
+  <div class="container">
+    <div class="grid" id="hot-grid"></div>
+  </div>
+</section>
+
+<main class="container">
+  <div class="sec-title"><h2>Truyện mới cập nhật</h2></div>
+  <ul class="updates" id="updates"></ul>
+
+  <section class="genres">
+    <h3>Thể Loại Truyện</h3>
+    <ul id="genres"></ul>
+  </section>
+
+  <div id="full-section" hidden>
+    <div class="sec-title"><h2>Truyện đã hoàn thành</h2></div>
+    <div class="full-grid" id="full-grid"></div>
+  </div>
+</main>
+
+<section class="about">
+  <div class="container">
+    <p>Mời bạn đọc truyện không bị làm phiền bởi quảng cáo tại <b>ĐọcTruyệnChữ</b>. Đây là nơi mình đăng tải các bản dịch truyện chữ, cập nhật đều đặn từng chương mới để bạn theo dõi mỗi ngày.</p>
+    <h2>Web truyện online miễn phí, đọc thoải mái mỗi ngày</h2>
+    <p><b>ĐọcTruyệnChữ</b> là trang truyện cá nhân, tập trung vào trải nghiệm đọc: chữ rõ ràng, có chế độ nền tối, tự nhớ chương đang đọc dở và chuyển chương nhanh bằng phím mũi tên.</p>
+    <p>Tất cả truyện trên trang đều được dịch và biên tập cẩn thận. Nếu bạn yêu thích một bộ truyện, hãy lưu lại trang để không bỏ lỡ chương mới nhất trên <b>ĐọcTruyệnChữ</b>.</p>
+  </div>
+</section>
+
+<script src="data/stories.js"></script>
+<script src="assets/app.js"></script>
+<script>
+  renderChrome();
+
+  // ---- Truyện Hot (lọc theo thể loại) ----
+  const allGenres = [...new Set(STORIES.flatMap((s) => s.genres))];
+  $("#hot-filter").insertAdjacentHTML("beforeend", allGenres.map((g) => `<option>${esc(g)}</option>`).join(""));
+  function renderHot() {
+    const g = $("#hot-filter").value;
+    const list = STORIES.filter((s) => s.featured !== false && (!g || s.genres.includes(g)));
+    $("#hot-grid").innerHTML = list.length
+      ? list.map((s) => `<a class="card" href="${storyUrl(s)}" title="${esc(s.title)}">${coverHTML(s, { badge: s.genres[0] })}<span class="cap">${esc(s.title)}</span></a>`).join("")
+      : `<p class="empty">Chưa có truyện nào thuộc thể loại này.</p>`;
+  }
+  $("#hot-filter").addEventListener("change", renderHot);
+  renderHot();
+
+  // ---- Truyện mới cập nhật: mỗi truyện một dòng, kèm chương mới nhất ----
+  const byUpdated = [...STORIES].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  $("#updates").innerHTML = byUpdated.map((s) => {
+    const last = s.chapters[s.chapters.length - 1];
+    const isNew = (Date.now() - new Date(s.updatedAt)) / 86400000 < 3;
+    return `<li>
+      <a class="u-title" href="${storyUrl(s)}">${esc(s.title)}</a>
+      ${s.status === "hoan-thanh" ? `<span class="u-badge full">FULL</span>` : isNew ? `<span class="u-badge">NEW</span>` : ""}
+      <span class="u-genre">${esc(s.genres.join(", "))}</span>
+      <a class="u-chap" href="${chapterUrl(s, last.n)}">${s.chapters.length} chương</a>
+      <span class="u-time"><a href="${chapterUrl(s, last.n)}">Chương ${last.n}: ${esc(last.title)}</a> · ${relTime(s.updatedAt)}</span>
+    </li>`;
+  }).join("") || `<li class="empty">Chưa có truyện nào.</li>`;
+
+  // ---- Thể loại (đậm những thể loại đã có truyện) ----
+  const genres = ["Tiên Hiệp","Kiếm Hiệp","Ngôn Tình","Đam Mỹ","Quan Trường","Võng Du","Khoa Huyễn","Hệ Thống","Huyền Huyễn","Dị Giới","Dị Năng","Quân Sự","Lịch Sử","Xuyên Không","Huyền Nghi","Trinh Thám","Linh Dị","Ngược","Sủng","Cung Đấu","Nữ Cường","Gia Đấu","Đông Phương","Đô Thị","Bách Hợp","Hài Hước","Điền Văn","Cổ Đại","Mạt Thế","Truyện Teen","Phương Tây","Nữ Phụ","Light Novel","Đoản Văn","Trọng Sinh","Khác"];
+  $("#genres").innerHTML = genres.map((g) => `<li><a href="#" class="${allGenres.includes(g) ? "has" : ""}" data-genre="${esc(g)}">${esc(g)}</a></li>`).join("");
+  $("#genres").addEventListener("click", (e) => {
+    const g = e.target.dataset && e.target.dataset.genre;
+    if (!g) return;
+    e.preventDefault();
+    $("#hot-filter").value = allGenres.includes(g) ? g : "";
+    if (!allGenres.includes(g)) { $("#hot-grid").innerHTML = `<p class="empty">Chưa có truyện nào thuộc thể loại ${esc(g)}.</p>`; }
+    else renderHot();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  // ---- Truyện đã hoàn thành (ẩn nếu chưa có) ----
+  const done = STORIES.filter((s) => s.status === "hoan-thanh");
+  if (done.length) {
+    $("#full-section").hidden = false;
+    $("#full-grid").innerHTML = done.map((s) => `
+      <div class="full-item">
+        <a class="card" href="${storyUrl(s)}" title="${esc(s.title)}">${coverHTML(s)}</a>
+        <a class="name" href="${storyUrl(s)}">${esc(s.title)}</a>
+        <a class="pill" href="${storyUrl(s)}">Full - ${s.chapters.length} chương</a>
+      </div>`).join("");
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# File Word gốc — chỉ giữ trên máy (nội dung đã có trong content/ và data/)
+*.docx
+*.docx.bak
+raw/
+
+# File tạm của server đăng chương
+.upload-tmp/
+
+# Ảnh tham khảo thiết kế (của trang khác, không đăng lên)
+metruyenchu_nho_10x.png
+
+# Rác hệ thống / editor
+Thumbs.db
+Desktop.ini
+.DS_Store
+.vscode/
+.claude/settings.local.json
