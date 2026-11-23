@@ -54,6 +54,7 @@
         <div id="preview"><p class="muted">Chưa có file nào.</p></div>
         <div id="warnings"></div>
         <label class="check"><input type="checkbox" id="touch" checked> Đặt ngày cập nhật của truyện là hôm nay</label>
+        <label class="check"><input type="checkbox" id="push" checked> Tự đẩy lên web (GitHub) sau khi đăng</label>
         <div class="actions">
           <button class="btn" id="publish" disabled>Đăng chương</button>
           <button class="btn ghost" id="clear" hidden>Bỏ chọn tất cả</button>
@@ -212,7 +213,7 @@
     try {
       const res = await fetch("/api/publish", {
         method: "POST", headers: { ...API_HEADERS, "Content-Type": "application/json" },
-        body: JSON.stringify({ slug: s.slug, files, touchDate: $("#touch").checked }),
+        body: JSON.stringify({ slug: s.slug, files, touchDate: $("#touch").checked, push: $("#push").checked }),
       });
       data = await res.json();
     } catch (err) {
@@ -228,6 +229,7 @@
       $("#form").hidden = true;
       result.innerHTML = `
         <div class="notice ok"><b>✓ Đăng thành công!</b> "${esc(s.title)}" hiện có <b>${data.total} chương</b> (mới nhất: Chương ${data.last}).</div>
+        <div id="push-status">${pushNotice(data.push)}</div>
         <div class="actions">
           ${newNums.length ? `<a class="btn" href="${chapterUrl(s, newNums[0])}">Đọc Chương ${newNums[0]}</a>` : ""}
           <a class="btn ghost" href="${storyUrl(s)}">Xem trang truyện</a>
@@ -241,6 +243,27 @@
         ${data.log && data.log.length ? `<details open><summary>Nhật ký import</summary><pre>${esc(data.log.join("\n"))}</pre></details>` : ""}`;
     }
     result.scrollIntoView({ behavior: "smooth" });
+  });
+
+  // ---- Trạng thái đẩy lên GitHub ----
+  function pushNotice(push) {
+    if (!push) return `<div class="notice warn">Chưa đẩy lên web (đã tắt tự đẩy). Chương mới chỉ có trên máy này. <button class="link-btn retry-push">Đẩy lên web ngay</button></div>`;
+    if (push.ok) return `<div class="notice ok"><b>✓ ${esc(push.message)}</b> Web sẽ cập nhật sau khoảng 1–2 phút${push.pagesUrl ? `: <a href="${esc(push.pagesUrl)}" target="_blank" rel="noopener">${esc(push.pagesUrl)}</a>` : "."}</div>`;
+    if (push.skipped) return `<div class="notice warn">${esc(push.message)}</div>`;
+    return `<div class="notice error"><b>${esc(push.message)}</b> <button class="link-btn retry-push">Thử đẩy lại</button>
+      ${push.detail ? `<details><summary>Chi tiết lỗi</summary><pre>${esc(push.detail)}</pre></details>` : ""}</div>`;
+  }
+  $("#result").addEventListener("click", async (e) => {
+    if (!e.target.classList.contains("retry-push")) return;
+    e.target.disabled = true;
+    e.target.textContent = "Đang đẩy…";
+    let push;
+    try {
+      push = await (await fetch("/api/push", { method: "POST", headers: API_HEADERS })).json();
+    } catch (err) {
+      push = { ok: false, message: "Mất kết nối tới server: " + err.message };
+    }
+    $("#push-status").innerHTML = pushNotice(push);
   });
 </script>
 </body>

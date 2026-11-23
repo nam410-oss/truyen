@@ -41,6 +41,12 @@ Chạy được ngay bằng cách mở file trong trình duyệt, không cần N
 - Mọi POST bắt buộc header `X-Admin: 1` + Origin localhost (chống trang lạ gửi request giả). Server cũng phải lưu UTF-8 có BOM.
 - Link "+ Đăng chương" trên header chỉ hiện khi chạy ở localhost/file://, không hiện trên web public. Khi deploy lên host tĩnh thì trang này không hoạt động (không có API), đó là chủ ý.
 - File .docx mới được lưu vào `raw/`; import tìm trong `raw/` trước, rồi tới thư mục gốc.
+- Tự đẩy lên GitHub (checkbox, mặc định bật): sau khi import thành công, server chỉ `git add/commit` **`content/` và `data/`** (không đụng file code) rồi `git push origin HEAD`. Push lỗi thì chương vẫn được lưu trên máy, trang hiện nút "Thử đẩy lại" (`POST /api/push`). Git được gọi qua `Diagnostics.Process` vì PS 5.1 coi stderr của git là lỗi.
+
+## Deploy
+
+- Repo: https://github.com/nam410-oss/truyen (nhánh `main`), web: https://nam410-oss.github.io/truyen/ (GitHub Pages, deploy từ `main` / root, có `.nojekyll`).
+- `.gitignore` loại `*.docx`, `raw/`, `.upload-tmp/` và ảnh tham khảo — không đưa file Word gốc lên repo public.
 
 ## Lệnh thường dùng
 

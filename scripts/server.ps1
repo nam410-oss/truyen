@@ -10,6 +10,8 @@
 # - POST /api/publish   body = {"slug","files":[{"token","name"}],"touchDate":true}
 #     -> chuyển file vào raw/, thêm vào sourceFiles trong meta.json, chạy import-docx.ps1.
 #        Nếu import lỗi thì khôi phục meta.json và xoá các file vừa thêm.
+#        Nếu "push": true -> commit content/ + data/ rồi git push (web GitHub Pages tự cập nhật).
+# - POST /api/push  -> thử commit + push lại (khi lần trước lỗi mạng...).
 #
 # Chỉ lắng nghe trên localhost. Các POST bắt buộc có header X-Admin: 1 và Origin là
 # localhost để trang web lạ không thể gửi request giả tới server này.
@@ -83,6 +85,74 @@ function Get-Query($req, [string]$key) {
   }
   return $null
 }
+# ---------- Git: tự đẩy lên GitHub sau khi đăng ----------
+# Chạy git bằng Process riêng: PowerShell 5.1 coi stderr của git là lỗi khi $ErrorActionPreference = Stop.
+function Invoke-Git([string[]]$GitArgs, [int]$TimeoutSec = 120) {
+  $psi = New-Object Diagnostics.ProcessStartInfo 'git'
+  $psi.Arguments = ($GitArgs | ForEach-Object { if ($_ -match '[\s"]') { '"' + ($_ -replace '"', '\"') + '"' } else { $_ } }) -join ' '
+  $psi.WorkingDirectory = $Root
+  $psi.UseShellExecute = $false
+  $psi.CreateNoWindow = $true
+  $psi.RedirectStandardOutput = $true
+  $psi.RedirectStandardError = $true
+  $psi.StandardOutputEncoding = $utf8
+  $psi.StandardErrorEncoding = $utf8
+  $psi.EnvironmentVariables['GIT_TERMINAL_PROMPT'] = '0'   # không treo chờ nhập mật khẩu
+  $p = [Diagnostics.Process]::Start($psi)
+  $outTask = $p.StandardOutput.ReadToEndAsync()
+  $errTask = $p.StandardError.ReadToEndAsync()
+  if (-not $p.WaitForExit($TimeoutSec * 1000)) {
+    try { $p.Kill() } catch { }
+    return @{ code = -1; out = "git $($GitArgs[0]) quá $TimeoutSec giây, đã dừng." }
+  }
+  $p.WaitForExit()
+  return @{ code = $p.ExitCode; out = ($outTask.Result + "`n" + $errTask.Result).Trim() }
+}
+
+# Commit những thay đổi trong content/ và data/ (không đụng file khác) rồi push.
+function Publish-ToGit([string]$message) {
+  $r = @{ ok = $false; skipped = $false; message = ''; detail = ''; pagesUrl = '' }
+  if (-not (Test-Path (Join-Path $Root '.git'))) { $r.skipped = $true; $r.message = 'Thư mục dự án chưa phải git repo nên không đẩy lên GitHub.'; return $r }
+  $remote = Invoke-Git @('remote', 'get-url', 'origin')
+  if ($remote.code -ne 0) { $r.skipped = $true; $r.message = 'Repo chưa có remote "origin" nên không đẩy lên GitHub.'; return $r }
+  if ($remote.out -match 'github\.com[:/]([^/]+)/([^/\s]+?)(\.git)?$') { $r.pagesUrl = "https://$($Matches[1].ToLower()).github.io/$($Matches[2])/" }
+
+  $add = Invoke-Git @('add', '-A', '--', 'content', 'data')
+  if ($add.code -ne 0) { $r.message = 'git add thất bại.'; $r.detail = $add.out; return $r }
+  $diff = Invoke-Git @('diff', '--cached', '--quiet', '--', 'content', 'data')
+  if ($diff.code -eq 1) {
+    if (-not (Test-Path $TmpDir)) { New-Item -ItemType Directory $TmpDir | Out-Null }
+    $msgFile = Join-Path $TmpDir 'commit-msg.txt'
+    [IO.File]::WriteAllText($msgFile, $message + "`n", $utf8)
+    $commit = Invoke-Git @('commit', '-q', '-F', $msgFile, '--', 'content', 'data')
+    Remove-Item -LiteralPath $msgFile -ErrorAction SilentlyContinue
+    if ($commit.code -ne 0) { $r.message = 'git commit thất bại.'; $r.detail = $commit.out; return $r }
+  }
+  $push = Invoke-Git @('push', 'origin', 'HEAD') 180
+  if ($push.code -ne 0) {
+    $r.message = 'Chương đã lưu trên máy nhưng chưa đẩy được lên GitHub.'
+    if ($push.out -match 'rejected|fetch first|non-fast-forward') { $r.message += ' Repo trên GitHub có thay đổi mà máy chưa có, cần chạy "git pull" trước.' }
+    elseif ($push.out -match 'Could not resolve host|unable to access') { $r.message += ' Kiểm tra lại kết nối mạng.' }
+    elseif ($push.out -match 'Authentication|could not read Username|403') { $r.message += ' Cần đăng nhập lại GitHub (chạy "git push" trong PowerShell một lần).' }
+    $r.detail = $push.out
+    return $r
+  }
+  $r.ok = $true
+  $r.message = 'Đã đẩy lên GitHub.'
+  return $r
+}
+
+function ConvertTo-PushJson($r) {
+  '{"ok":' + $(if ($r.ok) { 'true' } else { 'false' }) + ',"skipped":' + $(if ($r.skipped) { 'true' } else { 'false' }) +
+  ',"message":' + (ConvertTo-JsonString $r.message) + ',"detail":' + (ConvertTo-JsonString $r.detail) +
+  ',"pagesUrl":' + (ConvertTo-JsonString $r.pagesUrl) + '}'
+}
+
+function Invoke-Push($ctx) {
+  $r = Publish-ToGit "Cập nhật chương truyện ($((Get-Date).ToString('yyyy-MM-dd HH:mm')))"
+  Send-Json $ctx 200 (ConvertTo-PushJson $r)
+}
+
 function Get-SafeDocxName([string]$name) {
   $n = [IO.Path]::GetFileName("$name")
   if (-not $n -or $n -notmatch '\.docx$' -or $n.StartsWith('.')) { return $null }
@@ -126,6 +196,7 @@ function Invoke-Publish($ctx) {
     if (-not (Test-Path -LiteralPath (Join-Path $TmpDir "$($f.token).docx"))) { return Send-Error $ctx 400 "File tạm của $($f.name) đã hết hạn, hãy chọn lại file." }
   }
 
+  $before = @(Get-ChildItem (Join-Path $storyDir 'chuong-*.md') -ErrorAction SilentlyContinue | ForEach-Object { [int]($_.BaseName -replace '\D', '') })
   $metaBackup = [IO.File]::ReadAllText($metaPath, $utf8)
   $meta = $metaBackup | ConvertFrom-Json
   if (-not (Test-Path $RawDir)) { New-Item -ItemType Directory $RawDir | Out-Null }
@@ -159,7 +230,17 @@ function Invoke-Publish($ctx) {
 
   $nums = @(Get-ChildItem (Join-Path $storyDir 'chuong-*.md') | ForEach-Object { [int]($_.BaseName -replace '\D', '') } | Sort-Object)
   $logJson = '[' + (@($log | ForEach-Object { ConvertTo-JsonString $_ }) -join ',') + ']'
-  Send-Json $ctx 200 ('{"ok":true,"total":' + $nums.Count + ',"last":' + $(if ($nums.Count) { $nums[-1] } else { 0 }) + ',"log":' + $logJson + '}')
+
+  # Tự đẩy lên GitHub (nếu được bật).
+  $pushJson = 'null'
+  if ($body.push) {
+    $added = @($nums | Where-Object { $before -notcontains $_ })
+    $what = if ($added.Count -eq 0) { 'Cập nhật chương' }
+            elseif ($added.Count -eq 1) { "Đăng chương $($added[0])" }
+            else { "Đăng chương $($added[0])-$($added[-1])" }
+    $pushJson = ConvertTo-PushJson (Publish-ToGit "${what}: $($meta.title)")
+  }
+  Send-Json $ctx 200 ('{"ok":true,"total":' + $nums.Count + ',"last":' + $(if ($nums.Count) { $nums[-1] } else { 0 }) + ',"log":' + $logJson + ',"push":' + $pushJson + '}')
 }
 
 # ---------- Static files ----------
@@ -190,6 +271,7 @@ function Invoke-Request($ctx) {
     if ($path -eq '/api/ping') { return Send-Json $ctx 200 '{"ok":true}' }
     if ($path -eq '/api/preview' -and $req.HttpMethod -eq 'POST') { return Invoke-Preview $ctx }
     if ($path -eq '/api/publish' -and $req.HttpMethod -eq 'POST') { return Invoke-Publish $ctx }
+    if ($path -eq '/api/push' -and $req.HttpMethod -eq 'POST') { return Invoke-Push $ctx }
     return Send-Error $ctx 404 'API không tồn tại'
   }
   if ($req.HttpMethod -ne 'GET' -and $req.HttpMethod -ne 'HEAD') { return Send-Error $ctx 405 'Method not allowed' }
