@@ -127,14 +127,17 @@ Script `scripts/import-docx.ts` dùng thư viện `mammoth` để lấy raw text
 
 ## Design system (theo phong cách metruyenchu)
 
-Ảnh tham khảo: `metruyenchu_nho_10x.png`. Phong cách: **sạch, nhiều khoảng trắng, nền trắng, nội dung dày đặc dạng danh sách, nhấn màu cam**.
+Ảnh tham khảo: `metruyenchu_nho_10x.png` (lấy bố cục, **không** lấy màu nền). Phong cách: **sạch, thoáng, NỀN ĐEN (dark mode mặc định), nội dung dày đặc dạng danh sách, nhấn màu cam**.
 
-### Màu sắc
-- Nền trang: trắng `#ffffff`; nền khối phụ: `#f7f7f7`.
-- Màu nhấn (logo, link hover, tiêu đề section, badge): **cam** `#e8792b` (đặt token `--color-primary`).
-- Text chính `#333`, text phụ (thời gian, thể loại, số chương) `#888`.
-- Viền phân cách mảnh `#eee`.
-- Badge trạng thái: "Full" nền xanh lá nhạt, "Mới" nền cam nhạt.
+### Màu sắc (nền đen là mặc định cho toàn site)
+- Mọi màu đi qua token CSS trên `:root` trong `assets/style.css` — **không hard-code màu sáng** (`#fff`, `#ddd`...) cho nền/viền/chữ; chỉ dùng `#fff` cho chữ nằm trên nền màu (nút cam, badge, bìa).
+- Nền trang `--bg: #121212`; khối phụ `--bg-soft: #1a1a1a`; dải tiêu đề/footer `--bg-band: #222`; header `--header-bg: #181818`; ô nhập `--input-bg: #262626`.
+- Màu nhấn (logo, link hover, tiêu đề section, badge, nút): **cam** `--primary: #e8792b`; nền cam nhạt `--primary-soft: #3a2616`.
+- Chữ: chính `--text: #d4d4d4`, đậm/tiêu đề `--text-strong: #ededed`, phụ `--text-soft: #b0b0b0`, mờ (thời gian, thể loại, số chương) `--muted: #8c8c8c`.
+- Viền mảnh `--line: #2b2b2b`, viền ô nhập `--line-strong: #3a3a3a`.
+- Thông báo dùng token `--ok-*`, `--warn-*`, `--err-*` (nền tối, chữ sáng); "Full" xanh lá `--green`, "Mới/NEW" cam.
+- `color-scheme: dark` để thanh cuộn và ô form cũng tối.
+- Chế độ nền khác chỉ có ở trang đọc: `body.theme-white` (trắng) và `body.theme-sepia` (vàng giấy) ghi đè lại các token trên.
 
 ### Bố cục
 - Container giữa trang, `max-width: 1140px`, padding ngang 16px trên mobile.
@@ -151,7 +154,7 @@ Script `scripts/import-docx.ts` dùng thư viện `mammoth` để lấy raw text
 ### Trang đọc chương (quan trọng nhất)
 - Cột nội dung hẹp (`max-width: ~720px`), font serif dễ đọc, cỡ chữ mặc định 20px, `line-height: 1.8`.
 - Thanh điều hướng **Chương trước / Danh sách chương / Chương sau** ở cả đầu và cuối chương.
-- Cài đặt đọc (lưu `localStorage`, bọc try/catch): cỡ chữ, font, **chế độ nền** (trắng / vàng giấy / **đen**).
+- Cài đặt đọc (lưu `localStorage` key `reader:settings`, bọc try/catch): cỡ chữ, font, **chế độ nền**: `dark` (**mặc định**, Đen) / `sepia` (Vàng giấy) / `white` (Trắng). Giá trị cũ `"light"` từ bản nền trắng được tự chuyển thành `dark`.
 - Hỗ trợ phím `←` / `→` để chuyển chương.
 - Lưu vị trí "đang đọc dở" theo truyện vào `localStorage`, hiển thị "Đọc tiếp" ở trang truyện.
 

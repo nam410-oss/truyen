@@ -9,10 +9,10 @@
 <link rel="stylesheet" href="assets/style.css">
 <script>
   // Áp dụng chế độ nền ngay khi tải để tránh nháy trắng.
-  try { const t = JSON.parse(localStorage.getItem("reader:settings") || "{}").theme; if (t && t !== "light") document.documentElement.className = "pre-" + t; } catch {}
+  try { const t = JSON.parse(localStorage.getItem("reader:settings") || "{}").theme; if (t === "white" || t === "sepia") document.documentElement.className = "pre-" + t; } catch {}
 </script>
 <style>
-  html.pre-dark body { background: #161616; }
+  html.pre-white body { background: #ffffff; }
   html.pre-sepia body { background: #f4ecd8; }
 </style>
 </head>
@@ -58,7 +58,7 @@
         <div class="row"><span class="label">Font chữ</span>
           <span class="seg" id="font-seg"><button data-font="serif">Có chân</button><button data-font="sans">Không chân</button></span></div>
         <div class="row"><span class="label">Màu nền</span>
-          <span class="seg" id="theme-seg"><button data-theme="light">Trắng</button><button data-theme="sepia">Vàng giấy</button><button data-theme="dark">Đen</button></span></div>
+          <span class="seg" id="theme-seg"><button data-theme="dark">Đen</button><button data-theme="sepia">Vàng giấy</button><button data-theme="white">Trắng</button></span></div>
       </div>
       <article class="content" id="content">${body}</article>
       ${next ? "" : `<p class="end-note">Bạn đã đọc đến chương mới nhất. Chương tiếp theo sẽ sớm được cập nhật!</p>`}
@@ -66,13 +66,15 @@
       <p class="kbd-hint">Mẹo: dùng phím ← → để chuyển chương</p>`;
 
     // ---- Cài đặt đọc (lưu localStorage) ----
-    const settings = Object.assign({ fs: 20, font: "serif", theme: "light" }, store.get("reader:settings", {}));
+    const settings = Object.assign({ fs: 20, font: "serif", theme: "dark" }, store.get("reader:settings", {}));
+    // Bản cũ tự lưu theme "light" (nền trắng mặc định) cho mọi người đọc → chuyển sang nền đen mặc định mới.
+    if (!["dark", "sepia", "white"].includes(settings.theme)) settings.theme = "dark";
     function apply() {
       settings.fs = Math.min(32, Math.max(14, settings.fs));
       $("#content").style.setProperty("--fs", settings.fs + "px");
       $("#content").classList.toggle("sans", settings.font === "sans");
-      document.body.classList.remove("theme-sepia", "theme-dark");
-      if (settings.theme !== "light") document.body.classList.add("theme-" + settings.theme);
+      document.body.classList.remove("theme-sepia", "theme-white");
+      if (settings.theme !== "dark") document.body.classList.add("theme-" + settings.theme);
       document.documentElement.className = "";
       $("#fs-val").textContent = settings.fs;
       document.querySelectorAll("#font-seg button").forEach((b) => b.classList.toggle("on", b.dataset.font === settings.font));
