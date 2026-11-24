@@ -2,7 +2,13 @@
 // Dữ liệu truyện đến từ data/stories.js (sinh bởi scripts/import-docx.ps1).
 
 const SITE_NAME = "ĐọcTruyệnChữ";
-const STORIES = window.STORIES || [];
+// Truyện chưa có chương nào (vừa tạo trong trang quản lý) thì chưa hiện ra cho người đọc.
+const STORIES = (window.STORIES || []).filter((s) => s.chapters && s.chapters.length);
+const GENRES = ["Tiên Hiệp","Kiếm Hiệp","Ngôn Tình","Đam Mỹ","Quan Trường","Võng Du","Khoa Huyễn","Hệ Thống","Huyền Huyễn","Dị Giới","Dị Năng","Quân Sự","Lịch Sử","Xuyên Không","Huyền Nghi","Trinh Thám","Linh Dị","Ngược","Sủng","Cung Đấu","Nữ Cường","Gia Đấu","Đông Phương","Đô Thị","Bách Hợp","Hài Hước","Điền Văn","Cổ Đại","Mạt Thế","Truyện Teen","Phương Tây","Nữ Phụ","Light Novel","Đoản Văn","Trọng Sinh","Khác"];
+
+// "Vì Đại Đạo" -> "vi-dai-dao"
+const slugify = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[đĐ]/g, "d")
+  .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80).replace(/-+$/, "");
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const $ = (sel) => document.querySelector(sel);
@@ -80,7 +86,7 @@ function renderChrome(tagline) {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
         </button>
       </form>
-      ${isLocal ? `<a class="admin-link" href="dang-chuong.html">+ Đăng chương</a>` : ""}
+      ${isLocal ? `<a class="admin-link" href="dang-truyen.html">+ Đăng truyện</a>` : ""}
       <a class="menu-btn" href="index.html" aria-label="Menu">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </a>
@@ -103,7 +109,7 @@ function renderChrome(tagline) {
   }
 
   // Tìm kiếm đơn giản: so khớp tên truyện không phân biệt dấu.
-  const plain = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/gi, "d").toLowerCase();
+  const plain = (s) => slugify(s).replace(/-/g, " ");
   $("#search-form").addEventListener("submit", (e) => {
     e.preventDefault();
     const q = plain(e.target.q.value.trim());

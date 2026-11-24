@@ -40,6 +40,7 @@ body.theme-sepia {
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; }
 body {
   background: var(--bg);
@@ -236,6 +237,69 @@ button { font: inherit; }
 .admin details { margin-top: 12px; font-size: 13px; }
 .admin pre { background: var(--bg-soft); border: 1px solid var(--line); border-radius: 4px; padding: 10px; overflow-x: auto; font-size: 12px; }
 
+/* ============ Đăng & quản lý truyện ============ */
+.push-toggle { margin: 4px 0 8px; }
+.admin-grid { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 16px; align-items: start; margin-top: 8px; }
+.admin-grid.busy { opacity: .6; pointer-events: none; cursor: progress; }
+.admin-grid.disabled { opacity: .45; pointer-events: none; }
+.admin-grid > .panel { margin-top: 0; min-width: 0; }
+.panel-title { margin: 0 0 6px; font-size: 18px; color: var(--text-strong); }
+.pad { padding: 12px; }
+.btn.block { width: 100%; }
+.btn.sm { padding: 4px 10px; font-size: 12px; }
+.btn.danger { background: transparent; border-color: var(--danger); color: var(--danger); }
+.btn.danger:hover { background: var(--err-bg); color: var(--danger); }
+.story-pick { list-style: none; margin: 10px 0 0; padding: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--bg-soft); }
+.story-pick li + li { border-top: 1px solid var(--line); }
+.story-pick button { display: flex; gap: 10px; width: 100%; text-align: left; background: transparent; border: 0; color: var(--text); padding: 10px; cursor: pointer; align-items: center; }
+.story-pick button:hover { background: var(--bg-band); }
+.story-pick button.on { background: var(--primary-soft); box-shadow: inset 3px 0 0 var(--primary); }
+.admin-grid > aside { min-width: 0; }
+.story-pick button > span:last-child { min-width: 0; }
+.story-pick .t { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 13px; font-weight: 500; color: var(--text-strong); line-height: 1.35; }
+.story-pick .m { display: block; font-size: 11px; color: var(--muted); margin-top: 3px; }
+.card.mini { width: 38px; flex: none; box-shadow: none; }
+.card.mini .cover .s { display: none; }
+.story-bar { display: flex; gap: 14px; align-items: center; }
+.story-bar .card.mini { width: 64px; }
+.story-bar h3 { margin: 0 0 3px; font-size: 17px; color: var(--text-strong); line-height: 1.35; }
+.story-bar .ext { font-size: 13px; color: var(--primary); }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin: 16px 0 14px; overflow-x: auto; }
+.tabs button { background: none; border: 0; border-bottom: 2px solid transparent; color: var(--muted); padding: 9px 14px; cursor: pointer; font-size: 14px; white-space: nowrap; margin-bottom: -1px; }
+.tabs button:hover { color: var(--text-strong); }
+.tabs button.on { color: var(--primary); border-bottom-color: var(--primary); font-weight: 500; }
+.empty-state { padding: 30px 10px; text-align: center; color: var(--text-soft); }
+.field { display: block; margin-bottom: 14px; }
+.field > span { display: block; font-size: 13px; color: var(--text-soft); margin-bottom: 5px; }
+.field input[type=text], .field input[type=search], .field select, .field textarea, .toolbar input, .chap-table input {
+  width: 100%; background: var(--input-bg); border: 1px solid var(--line-strong); color: var(--text); border-radius: 4px; padding: 8px 10px; font: inherit; font-size: 14px;
+}
+.field input:focus, .field select:focus, .field textarea:focus, .toolbar input:focus, .chap-table input:focus { outline: 0; border-color: var(--primary); }
+.field input:disabled { opacity: .6; }
+.field textarea { resize: vertical; line-height: 1.6; }
+.field small { display: block; color: var(--muted); font-size: 12px; margin-top: 5px; }
+.check-field { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-top: 24px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.genre-checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 5px 10px; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px; }
+.genre-checks label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+input[type=checkbox] { accent-color: var(--primary); }
+.cover-edit { display: flex; gap: 14px; align-items: flex-start; padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px dashed var(--line); }
+.cover-edit .card.mini { width: 90px; }
+.cover-edit p { margin: 4px 0 10px; }
+.danger-zone { border: 1px solid var(--err-border); border-radius: 6px; padding: 12px 14px; margin-top: 26px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.toolbar { display: flex; gap: 12px; align-items: center; margin: 0 0 10px; flex-wrap: wrap; }
+.toolbar input { flex: 1; min-width: 200px; width: auto; }
+.toolbar .muted { font-size: 12px; }
+.table-wrap { border: 1px solid var(--line); border-radius: 6px; overflow-x: auto; }
+.chap-table.edit td:nth-child(2) { width: 100%; }
+.chap-table.edit a:hover { color: var(--primary); }
+.chap-table .acts { white-space: nowrap; text-align: right; }
+.chap-table .acts .btn + .btn { margin-left: 6px; }
+.chap-table input { padding: 5px 8px; font-size: 13px; }
+.chap-table .in-n { width: 84px; }
+.chap-table tr.editing td { background: var(--primary-soft); }
+#status:empty { display: none; }
+
 /* ============ Responsive ============ */
 @media (max-width: 760px) {
   body { font-size: 13px; }
@@ -282,6 +346,12 @@ button { font: inherit; }
   .desc { font-size: 13px; }
   .chap-list a { font-size: 12px; padding: 7px 2px; }
   .reader h1 { font-size: 18px; }
+  .admin-grid { grid-template-columns: 1fr; }
+  .story-pick { max-height: 230px; overflow-y: auto; }
+  .grid2 { grid-template-columns: 1fr; }
+  .check-field { margin-top: 0; }
+  .panel { padding: 14px; }
+  .tabs button { padding: 8px 10px; font-size: 13px; }
 }
 @media (max-width: 480px) {
   .grid, .full-grid { grid-template-columns: repeat(3, 1fr); }
@@ -297,4 +367,10 @@ button { font: inherit; }
   .story-head h1 { text-align: center; }
   .chap-list { grid-template-columns: 1fr; }
   .chap-nav .btn { padding: 6px 10px; }
+  .header .container { gap: 8px; }
+  .search { width: 100px; }
+  .admin-link { padding: 3px 8px; font-size: 11px; }
+  .chap-table.edit th:nth-child(3), .chap-table.edit td:nth-child(3) { display: none; }
+  .chap-table td, .chap-table th { padding: 6px 8px; }
+  .toolbar .muted { display: none; }
 }

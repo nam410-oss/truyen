@@ -80,7 +80,7 @@
   }).join("") || `<li class="empty">Chưa có truyện nào.</li>`;
 
   // ---- Thể loại (đậm những thể loại đã có truyện) ----
-  const genres = ["Tiên Hiệp","Kiếm Hiệp","Ngôn Tình","Đam Mỹ","Quan Trường","Võng Du","Khoa Huyễn","Hệ Thống","Huyền Huyễn","Dị Giới","Dị Năng","Quân Sự","Lịch Sử","Xuyên Không","Huyền Nghi","Trinh Thám","Linh Dị","Ngược","Sủng","Cung Đấu","Nữ Cường","Gia Đấu","Đông Phương","Đô Thị","Bách Hợp","Hài Hước","Điền Văn","Cổ Đại","Mạt Thế","Truyện Teen","Phương Tây","Nữ Phụ","Light Novel","Đoản Văn","Trọng Sinh","Khác"];
+  const genres = GENRES;
   $("#genres").innerHTML = genres.map((g) => `<li><a href="#" class="${allGenres.includes(g) ? "has" : ""}" data-genre="${esc(g)}">${esc(g)}</a></li>`).join("");
   $("#genres").addEventListener("click", (e) => {
     const g = e.target.dataset && e.target.dataset.genre;

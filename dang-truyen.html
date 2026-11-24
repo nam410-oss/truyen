@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đăng & quản lý truyện - ĐọcTruyệnChữ</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Noto+Serif:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<main class="container admin">
+  <nav class="crumbs"><a href="index.html">Trang chủ</a><span>›</span>Đăng & quản lý truyện</nav>
+  <div class="sec-title"><h2>Đăng & quản lý truyện</h2></div>
+
+  <div class="notice error" id="offline" hidden>
+    <b>Chưa kết nối được server quản lý.</b> Trang này cần chạy qua server cục bộ:
+    <ol>
+      <li>Mở PowerShell tại thư mục dự án (<code>d:\truyen</code>).</li>
+      <li>Chạy: <code>powershell -ExecutionPolicy Bypass -File scripts\server.ps1</code></li>
+      <li>Mở <a href="http://localhost:8080/dang-truyen.html">http://localhost:8080/dang-truyen.html</a></li>
+    </ol>
+  </div>
+
+  <label class="check push-toggle"><input type="checkbox" id="auto-push"> Tự đẩy lên web (GitHub) sau mỗi thay đổi</label>
+  <div id="status"></div>
+
+  <div class="admin-grid" id="app">
+    <aside>
+      <button class="btn block" id="new-story">+ Đăng truyện mới</button>
+      <ul class="story-pick" id="story-list"><li class="muted pad">Đang tải…</li></ul>
+    </aside>
+    <section class="panel" id="main"></section>
+  </div>
+</main>
+
+<script src="data/stories.js"></script>
+<script src="assets/app.js"></script>
+<script>
+  renderChrome();
+  const API_HEADERS = { "X-Admin": "1" };
+  const state = {
+    stories: [], slug: null, story: null, chapters: [],
+    view: "empty",          // "empty" | "new" | "story"
+    tab: "upload",          // "upload" | "chapters" | "info"
+    uploads: [], editing: null, filter: "",
+  };
+  let busy = false;
+
+  const autoPush = $("#auto-push");
+  autoPush.checked = store.get("admin:autoPush", true);
+  autoPush.addEventListener("change", () => store.set("admin:autoPush", autoPush.checked));
+
+  // ================= Gọi API =================
+  async function api(path, { json, body } = {}) {
+    const init = { method: json || body ? "POST" : "GET", headers: { ...API_HEADERS } };
+    if (json) { init.headers["Content-Type"] = "application/json"; init.body = JSON.stringify({ push: autoPush.checked, ...json }); }
+    else if (body) { init.headers["Content-Type"] = "application/octet-stream"; init.body = body; }
+    let data;
+    try { data = await (await fetch(path, init)).json(); }
+    catch (e) { throw new Error("Không kết nối được server: " + e.message); }
+    if (!data.ok) throw new Error(data.error || "Lỗi không xác định");
+    return data;
+  }
+
+  function setBusy(on) { busy = on; $("#app").classList.toggle("busy", on); }
+
+  // Chạy 1 thao tác ghi: hiện kết quả + trạng thái đẩy lên GitHub, rồi tải lại dữ liệu.
+  async function run(fn) {
+    if (busy) return null;
+    setBusy(true);
+    try {
+      const data = await fn();
+      showStatus(data.message, data.push);
+      return data;
+    } catch (e) {
+      showStatus(e.message, undefined, "error");
+      return null;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function showStatus(message, push, kind = "ok") {
+    $("#status").innerHTML = `<div class="notice ${kind}">${kind === "ok" ? "✓ " : ""}${esc(message)}</div>` + (kind === "ok" ? pushNotice(push) : "");
+    $("#status").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  function pushNotice(push) {
+    if (push === undefined) return "";
+    if (push === null) return `<div class="notice warn">Chưa đẩy lên web (đang tắt tự đẩy), thay đổi mới chỉ có trên máy này. <button class="link-btn retry-push">Đẩy lên web ngay</button></div>`;
+    if (push.ok) return `<div class="notice ok">✓ ${esc(push.message)} Web sẽ cập nhật sau khoảng 1–2 phút${push.pagesUrl ? `: <a href="${esc(push.pagesUrl)}" target="_blank" rel="noopener">${esc(push.pagesUrl)}</a>` : "."}</div>`;
+    if (push.skipped) return `<div class="notice warn">${esc(push.message)}</div>`;
+    return `<div class="notice error"><b>${esc(push.message)}</b> <button class="link-btn retry-push">Thử đẩy lại</button>
+      ${push.detail ? `<details><summary>Chi tiết lỗi</summary><pre>${esc(push.detail)}</pre></details>` : ""}</div>`;
+  }
+  $("#status").addEventListener("click", async (e) => {
+    if (!e.target.classList.contains("retry-push")) return;
+    e.target.disabled = true; e.target.textContent = "Đang đẩy…";
+    let push;
+    try { push = await (await fetch("/api/push", { method: "POST", headers: API_HEADERS })).json(); }
+    catch (err) { push = { ok: false, message: "Mất kết nối tới server: " + err.message }; }
+    e.target.closest(".notice").outerHTML = pushNotice(push);
+  });
+
+  // ================= Tải dữ liệu =================
+  async function loadStories() {
+    state.stories = (await api("/api/stories")).stories;
+    renderSide();
+  }
+  async function loadStory(slug) {
+    const data = await api(`/api/story?slug=${encodeURIComponent(slug)}`);
+    state.story = data.story;
+    state.chapters = data.chapters;
+  }
+  async function refresh() {
+    await loadStories();
+    if (state.view === "story" && state.slug) {
+      if (state.stories.some((s) => s.slug === state.slug)) await loadStory(state.slug);
+      else { state.view = "empty"; state.slug = null; }
+    }
+    render();
+  }
+  function syncUrl() {
+    const q = new URLSearchParams();
+    if (state.view === "new") q.set("new", "1");
+    if (state.view === "story") { q.set("s", state.slug); q.set("tab", state.tab); }
+    history.replaceState(null, "", "dang-truyen.html" + (q.toString() ? "?" + q : ""));
+  }
+
+  async function openStory(slug, tab) {
+    if (busy) return;
+    state.view = "story"; state.slug = slug; state.uploads = []; state.editing = null; state.filter = "";
+    if (tab) state.tab = tab;
+    setBusy(true);
+    try { await loadStory(slug); }
+    catch (e) { showStatus(e.message, undefined, "error"); state.view = "empty"; }
+    finally { setBusy(false); }
+    renderSide(); render();
+  }
+
+  // ================= Sidebar =================
+  function renderSide() {
+    $("#story-list").innerHTML = state.stories.length ? state.stories.map((s) => `
+      <li><button class="${state.view === "story" && s.slug === state.slug ? "on" : ""}" data-open="${esc(s.slug)}">
+        <span class="card mini">${coverHTML(s)}</span>
+        <span><span class="t">${esc(s.title)}</span>
+        <span class="m">${s.chapters ? `${s.chapters} chương · ${statusText(s)}` : "Chưa có chương (chưa hiện trên web)"}</span></span>
+      </button></li>`).join("") : `<li class="muted pad">Chưa có truyện nào. Bấm "Đăng truyện mới" để bắt đầu.</li>`;
+    $("#new-story").classList.toggle("ghost", state.view !== "new");
+  }
+  $("#story-list").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-open]");
+    if (b) openStory(b.dataset.open);
+  });
+  $("#new-story").addEventListener("click", () => {
+    if (busy) return;
+    state.view = "new"; state.slug = null;
+    renderSide(); render();
+  });
+
+  // ================= Khu chính =================
+  function render() {
+    syncUrl();
+    const main = $("#main");
+    if (state.view === "new") {
+      main.innerHTML = `<h3 class="panel-title">Đăng truyện mới</h3>
+        <p class="muted">Điền thông tin truyện, bấm <b>Tạo truyện</b>, sau đó đăng chương bằng file Word. Truyện chỉ hiện trên web khi đã có ít nhất 1 chương.</p>
+        ${storyFormHTML(null)}`;
+      bindStoryForm(null);
+      return;
+    }
+    if (state.view !== "story" || !state.story) {
+      main.innerHTML = `<div class="empty-state">
+        <p><b>Chọn một truyện ở bên trái</b> để đăng chương, sửa/xoá chương hoặc sửa thông tin truyện.</p>
+        <p>Hoặc bấm <b>+ Đăng truyện mới</b> để thêm một bộ truyện mới lên web.</p></div>`;
+      return;
+    }
+    const s = state.story, total = state.chapters.length;
+    main.innerHTML = `
+      <div class="story-bar">
+        <span class="card mini">${coverHTML(s)}</span>
+        <div>
+          <h3>${esc(s.title)}</h3>
+          <div class="muted">${total} chương · ${statusText(s)} · cập nhật ${esc(relTime(s.updatedAt).toLowerCase())}</div>
+          ${total ? `<a class="ext" href="${storyUrl(s)}" target="_blank">Xem trên web ↗</a>` : `<span class="muted">Chưa hiện trên web (chưa có chương)</span>`}
+        </div>
+      </div>
+      <nav class="tabs" role="tablist">
+        <button role="tab" data-tab="upload" class="${state.tab === "upload" ? "on" : ""}">Đăng chương</button>
+        <button role="tab" data-tab="chapters" class="${state.tab === "chapters" ? "on" : ""}">Danh sách chương (${total})</button>
+        <button role="tab" data-tab="info" class="${state.tab === "info" ? "on" : ""}">Thông tin truyện</button>
+      </nav>
+      <div id="tab-body"></div>`;
+    if (state.tab === "upload") renderUploadTab();
+    else if (state.tab === "chapters") renderChaptersTab();
+    else renderInfoTab();
+  }
+  $("#main").addEventListener("click", (e) => {
+    const t = e.target.closest("[data-tab]");
+    if (!t || busy) return;
+    state.tab = t.dataset.tab; state.editing = null;
+    render();
+  });
+
+  // ================= Form thông tin truyện =================
+  function storyFormHTML(s) {
+    const isNew = !s;
+    const g = new Set(s ? s.genres : []);
+    const allGenres = [...GENRES, ...(s ? s.genres.filter((x) => !GENRES.includes(x)) : [])];
+    return `<form id="story-form" class="story-form" novalidate>
+      <label class="field"><span>Tên truyện *</span>
+        <input type="text" name="title" maxlength="200" required value="${esc(s ? s.title : "")}" placeholder="VD: Vì Đại Đạo Tôi Phụ Hết Tiên Tử"></label>
+      <label class="field"><span>Đường dẫn (slug)</span>
+        ${isNew
+          ? `<input type="text" name="slug" maxlength="80" placeholder="tu-dong-tao-tu-ten-truyen"><small>Tự tạo từ tên truyện; chỉ gồm chữ thường không dấu, số, dấu gạch ngang. <b>Không đổi được sau khi tạo.</b> Link: <code id="slug-preview">truyen.html?s=…</code></small>`
+          : `<input type="text" value="${esc(s.slug)}" disabled><small>Đường dẫn cố định để link cũ không bị hỏng.</small>`}
+      </label>
+      <div class="grid2">
+        <label class="field"><span>Tác giả</span><input type="text" name="author" maxlength="120" value="${esc(s ? s.author : "")}" placeholder="Đang cập nhật"></label>
+        <label class="field"><span>Người dịch</span><input type="text" name="translator" maxlength="120" value="${esc(s ? s.translator : "")}" placeholder="Đang cập nhật"></label>
+      </div>
+      <div class="field"><span>Thể loại</span>
+        <div class="genre-checks">${allGenres.map((x) => `<label><input type="checkbox" name="genres" value="${esc(x)}" ${g.has(x) ? "checked" : ""}> ${esc(x)}</label>`).join("")}</div>
+      </div>
+      <div class="grid2">
+        <label class="field"><span>Trạng thái</span>
+          <select name="status"><option value="dang-ra">Đang ra</option><option value="hoan-thanh" ${s && s.status === "hoan-thanh" ? "selected" : ""}>Hoàn thành</option></select></label>
+        <label class="field check-field"><input type="checkbox" name="featured" ${!s || s.featured ? "checked" : ""}> Hiện ở mục "Truyện Hot" trên trang chủ</label>
+      </div>
+      <label class="field"><span>Giới thiệu</span>
+        <textarea name="description" rows="5" maxlength="5000" placeholder="Vài câu giới thiệu nội dung truyện…">${esc(s ? s.description : "")}</textarea></label>
+      ${isNew ? `<label class="field"><span>Ảnh bìa (không bắt buộc)</span><input type="file" name="cover" accept="image/jpeg,image/png,image/webp">
+        <small>JPG/PNG/WEBP, tối đa 8 MB, nên dùng ảnh dọc tỉ lệ 2:3. Không có ảnh thì web tự tạo bìa từ tên truyện.</small></label>` : ""}
+      <div class="actions"><button class="btn" type="submit">${isNew ? "Tạo truyện" : "Lưu thông tin"}</button></div>
+    </form>`;
+  }
+
+  function bindStoryForm(s) {
+    const form = $("#story-form");
+    if (!s) {
+      let slugTouched = false;
+      const slugIn = form.slug, preview = $("#slug-preview");
+      const update = () => { if (!slugTouched) slugIn.value = slugify(form.title.value); preview.textContent = `truyen.html?s=${slugIn.value || "…"}`; };
+      form.title.addEventListener("input", update);
+      slugIn.addEventListener("input", () => { slugTouched = true; slugIn.value = slugify(slugIn.value.replace(/\s/g, "-")) + (/[-\s]$/.test(slugIn.value) ? "-" : ""); update(); });
+      update();
+    }
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fields = {
+        title: form.title.value.trim(),
+        author: form.author.value.trim(),
+        translator: form.translator.value.trim(),
+        genres: [...form.querySelectorAll('input[name="genres"]:checked')].map((x) => x.value),
+        status: form.status.value,
+        featured: form.featured.checked,
+        description: form.description.value.trim(),
+      };
+      if (!fields.title) { showStatus("Hãy nhập tên truyện.", undefined, "error"); form.title.focus(); return; }
+      const slug = s ? s.slug : form.slug.value.replace(/-+$/, "");
+      if (!s && !slug) { showStatus("Hãy nhập đường dẫn (slug) cho truyện.", undefined, "error"); return; }
+      const coverFile = !s && form.cover.files[0];
+      if (coverFile && coverFile.size > 8 * 1024 * 1024) { showStatus("Ảnh bìa quá lớn (tối đa 8 MB).", undefined, "error"); return; }
+
+      const data = await run(() => api("/api/story/save", { json: { slug, isNew: !s, ...fields } }));
+      if (!data) return;
+      if (coverFile) await run(() => uploadCover(slug, coverFile));
+      if (!s) { await openStory(slug, "upload"); await loadStories(); renderSide(); }
+      else await refresh();
+    });
+  }
+
+  function uploadCover(slug, file) {
+    const ext = (file.name.split(".").pop() || "").toLowerCase();
+    return api(`/api/story/cover?slug=${encodeURIComponent(slug)}&ext=${encodeURIComponent(ext)}&push=${autoPush.checked ? 1 : 0}`, { body: file });
+  }
+
+  // ================= Tab: Thông tin truyện =================
+  function renderInfoTab() {
+    const s = state.story;
+    $("#tab-body").innerHTML = `
+      <div class="cover-edit">
+        <span class="card mini">${coverHTML(s)}</span>
+        <div>
+          <b>Ảnh bìa</b>
+          <p class="muted">${s.cover ? "Đang dùng ảnh bìa đã tải lên." : "Chưa có ảnh bìa, web đang tự tạo bìa từ tên truyện."} JPG/PNG/WEBP, tối đa 8 MB, nên dùng ảnh dọc tỉ lệ 2:3.</p>
+          <div class="actions">
+            <label class="btn ghost sm">Chọn ảnh mới…<input type="file" id="cover-file" accept="image/jpeg,image/png,image/webp" hidden></label>
+            ${s.cover ? `<button class="btn danger sm" id="cover-remove" type="button">Xoá ảnh bìa</button>` : ""}
+          </div>
+        </div>
+      </div>
+      ${storyFormHTML(s)}
+      <div class="danger-zone">
+        <div><b>Xoá truyện</b><div class="muted">Xoá truyện và toàn bộ ${state.chapters.length} chương khỏi web. File Word gốc trong <code>raw/</code> vẫn được giữ.</div></div>
+        <button class="btn danger" id="delete-story" type="button">Xoá truyện này</button>
+      </div>`;
+    bindStoryForm(s);
+
+    $("#cover-file").addEventListener("change", async (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      if (f.size > 8 * 1024 * 1024) { showStatus("Ảnh bìa quá lớn (tối đa 8 MB).", undefined, "error"); return; }
+      if (await run(() => uploadCover(s.slug, f))) await refresh();
+    });
+    const rm = $("#cover-remove");
+    if (rm) rm.addEventListener("click", async () => {
+      if (!confirm("Xoá ảnh bìa? Web sẽ quay lại dùng bìa tự tạo từ tên truyện.")) return;
+      const body = { slug: s.slug, isNew: false, removeCover: true, title: s.title, author: s.author, translator: s.translator, genres: s.genres, status: s.status, featured: s.featured, description: s.description };
+      if (await run(() => api("/api/story/save", { json: body }))) await refresh();
+    });
+    $("#delete-story").addEventListener("click", async () => {
+      const typed = prompt(`Xoá truyện "${s.title}" cùng ${state.chapters.length} chương?\nThao tác này không hoàn tác được trên web.\n\nGõ XOA để xác nhận:`);
+      if (typed === null) return;
+      if (typed.trim().toUpperCase() !== "XOA") { showStatus('Chưa xoá: bạn cần gõ đúng chữ XOA để xác nhận.', undefined, "error"); return; }
+      if (await run(() => api("/api/story/delete", { json: { slug: s.slug, confirm: true } }))) {
+        state.view = "empty"; state.slug = null; state.story = null;
+        await refresh();
+      }
+    });
+  }
+
+  // ================= Tab: Danh sách chương (sửa / xoá) =================
+  function renderChaptersTab() {
+    $("#tab-body").innerHTML = state.chapters.length ? `
+      <div class="toolbar">
+        <input type="search" id="ch-filter" placeholder="Tìm chương theo số hoặc tên…" value="${esc(state.filter)}">
+        <span class="muted">Sửa để đổi <b>số chương</b> hoặc <b>tên chương</b>. Nội dung chương giữ nguyên.</span>
+      </div>
+      <div class="table-wrap"><table class="chap-table edit">
+        <thead><tr><th>Số</th><th>Tên chương</th><th>Chữ</th><th></th></tr></thead>
+        <tbody id="ch-rows"></tbody>
+      </table></div>`
+      : `<p class="muted">Chưa có chương nào. Sang tab <b>Đăng chương</b> để đăng chương đầu tiên.</p>`;
+    if (!state.chapters.length) return;
+    $("#ch-filter").addEventListener("input", (e) => { state.filter = e.target.value; renderChapterRows(); });
+    renderChapterRows();
+  }
+
+  function renderChapterRows() {
+    const q = slugify(state.filter).replace(/-/g, " ");
+    const list = state.chapters.filter((c) => !q || String(c.n) === q.trim() || slugify(`${c.n} ${c.title}`).replace(/-/g, " ").includes(q));
+    const s = state.story;
+    $("#ch-rows").innerHTML = list.map((c) => state.editing === c.n ? `
+      <tr class="editing" data-n="${c.n}">
+        <td><input type="number" class="in-n" min="1" max="99999" value="${c.n}" aria-label="Số chương"></td>
+        <td><input type="text" class="in-title" maxlength="200" value="${esc(c.title)}" aria-label="Tên chương"></td>
+        <td>${c.words.toLocaleString("vi-VN")}</td>
+        <td class="acts"><button class="btn sm" data-save="${c.n}">Lưu</button><button class="btn sm ghost" data-cancel>Huỷ</button></td>
+      </tr>` : `
+      <tr data-n="${c.n}">
+        <td>${c.n}</td>
+        <td><a href="${chapterUrl(s, c.n)}" target="_blank">${esc(c.title)}</a></td>
+        <td>${c.words.toLocaleString("vi-VN")}</td>
+        <td class="acts"><button class="btn sm ghost" data-edit="${c.n}">Sửa</button><button class="btn sm danger" data-del="${c.n}">Xoá</button></td>
+      </tr>`).join("") || `<tr><td colspan="4" class="muted">Không có chương nào khớp "${esc(state.filter)}".</td></tr>`;
+    const row = $("#ch-rows tr.editing");
+    if (row) { const t = row.querySelector(".in-title"); t.focus(); t.select(); }
+  }
+
+  $("#main").addEventListener("click", async (e) => {
+    const b = e.target.closest("button");
+    if (!b || busy || !$("#ch-rows")) return;
+    if (b.dataset.edit) { state.editing = Number(b.dataset.edit); renderChapterRows(); }
+    else if (b.hasAttribute("data-cancel")) { state.editing = null; renderChapterRows(); }
+    else if (b.dataset.save) saveChapter(Number(b.dataset.save));
+    else if (b.dataset.del) {
+      const n = Number(b.dataset.del), c = state.chapters.find((x) => x.n === n);
+      if (!confirm(`Xoá chương ${n}: "${c.title}"?\nNội dung chương sẽ bị xoá khỏi web.`)) return;
+      if (await run(() => api("/api/chapter/delete", { json: { slug: state.slug, n } }))) { await refresh(); }
+    }
+  });
+  $("#main").addEventListener("keydown", (e) => {
+    if (!e.target.closest("tr.editing")) return;
+    if (e.key === "Enter") { e.preventDefault(); saveChapter(state.editing); }
+    if (e.key === "Escape") { state.editing = null; renderChapterRows(); }
+  });
+
+  async function saveChapter(n) {
+    const row = $(`#ch-rows tr[data-n="${n}"]`);
+    const newN = Number(row.querySelector(".in-n").value);
+    const title = row.querySelector(".in-title").value.trim();
+    const c = state.chapters.find((x) => x.n === n);
+    if (!Number.isInteger(newN) || newN < 1 || newN > 99999) { showStatus("Số chương phải là số nguyên từ 1 đến 99999.", undefined, "error"); return; }
+    if (!title) { showStatus("Tên chương không được để trống.", undefined, "error"); return; }
+    if (newN === c.n && title === c.title) { state.editing = null; renderChapterRows(); return; }
+    if (newN !== n && state.chapters.some((x) => x.n === newN)) { showStatus(`Đã có chương ${newN}. Hãy xoá hoặc đổi số chương ${newN} trước.`, undefined, "error"); return; }
+    if (await run(() => api("/api/chapter/update", { json: { slug: state.slug, n, newN, title } }))) {
+      state.editing = null;
+      await refresh();
+    }
+  }
+
+  // ================= Tab: Đăng chương (từ file Word) =================
+  function renderUploadTab() {
+    $("#tab-body").innerHTML = `
+      <div class="step"><span class="num">1</span><div class="grow">
+        <span class="step-label">Chọn file Word (.docx) chứa các chương</span>
+        <label class="drop" id="drop">
+          <input type="file" id="file" accept=".docx" multiple hidden>
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+          <span><b>Kéo thả file vào đây</b> hoặc bấm để chọn</span>
+          <small>Mỗi chương bắt đầu bằng dòng <code>Chương NN: Tên chương</code>. Có thể chọn nhiều file.</small>
+        </label>
+      </div></div>
+      <div class="step"><span class="num">2</span><div class="grow">
+        <span class="step-label">Kiểm tra trước khi đăng</span>
+        <div id="preview"></div>
+        <div id="warnings"></div>
+        <label class="check"><input type="checkbox" id="touch" checked> Đặt ngày cập nhật của truyện là hôm nay</label>
+        <div class="actions">
+          <button class="btn" id="publish" disabled>Đăng chương</button>
+          <button class="btn ghost" id="clear" hidden>Bỏ chọn tất cả</button>
+        </div>
+      </div></div>`;
+    const drop = $("#drop");
+    $("#file").addEventListener("change", (e) => { addFiles(e.target.files); e.target.value = ""; });
+    ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+    ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
+    drop.addEventListener("drop", (e) => addFiles(e.dataTransfer.files));
+    $("#clear").addEventListener("click", () => { state.uploads = []; renderPreview(); });
+    $("#publish").addEventListener("click", publish);
+    $("#preview").addEventListener("click", (e) => {
+      const i = e.target.dataset.remove;
+      if (i === undefined) return;
+      state.uploads.splice(Number(i), 1);
+      renderPreview();
+    });
+    renderPreview();
+  }
+
+  async function addFiles(fileList) {
+    for (const file of fileList) {
+      if (!/\.docx$/i.test(file.name)) { showStatus(`"${file.name}" không phải file .docx`, undefined, "error"); continue; }
+      const item = { name: file.name, loading: true, chapters: [] };
+      state.uploads = state.uploads.filter((u) => u.name !== file.name);  // chọn lại cùng tên thì thay thế
+      state.uploads.push(item);
+      renderPreview();
+      try {
+        const data = await api(`/api/preview?name=${encodeURIComponent(file.name)}`, { body: file });
+        Object.assign(item, { token: data.token, chapters: data.chapters, loading: false });
+      } catch (err) {
+        Object.assign(item, { loading: false, error: err.message });
+      }
+      if ($("#preview")) renderPreview();
+    }
+  }
+
+  function analyse() {
+    const existing = new Set(state.chapters.map((c) => c.n));
+    const seen = new Map();
+    const warnings = [];
+    for (const u of state.uploads) {
+      if (u.loading || u.error) continue;
+      if (!u.chapters.length) warnings.push(`File <b>${esc(u.name)}</b> không có dòng nào dạng "Chương NN: Tên chương" nên sẽ không được đăng.`);
+      for (const c of u.chapters) {
+        c.status = existing.has(c.n) ? "replace" : "new";
+        if (seen.has(c.n)) warnings.push(`Chương ${c.n} xuất hiện ở cả <b>${esc(seen.get(c.n))}</b> và <b>${esc(u.name)}</b>. Bản ở file chọn sau sẽ được dùng.`);
+        seen.set(c.n, u.name);
+        if (!c.paras) warnings.push(`Chương ${c.n} trong <b>${esc(u.name)}</b> không có nội dung.`);
+      }
+    }
+    let added = 0, replaced = 0;
+    for (const n of seen.keys()) existing.has(n) ? replaced++ : added++;
+    // Số chương bất thường: nhảy quá xa so với chương cuối (thường do gõ nhầm, VD "Chương 1181" thay vì "118").
+    const lastExisting = Math.max(0, ...existing);
+    const jumps = [...seen.keys()].filter((n) => !existing.has(n) && n > lastExisting + 50);
+    if (jumps.length) warnings.push(`Số chương nhảy rất xa so với chương mới nhất (${lastExisting}): <b>${jumps.join(", ")}</b>. Có thể gõ nhầm số trong file Word — kiểm tra lại, hoặc sau khi đăng hãy sửa ở tab "Danh sách chương".`);
+    // Chỉ kiểm tra chương bị thiếu tới chương lớn nhất trong file đang đăng (bỏ qua số nhảy xa).
+    const all = new Set([...existing, ...seen.keys()]);
+    const max = Math.max(0, ...[...seen.keys()].filter((n) => !jumps.includes(n)));
+    const missing = [];
+    for (let i = 1; i <= max; i++) if (!all.has(i)) missing.push(i);
+    if (missing.length) warnings.push(`Sau khi đăng sẽ bị thiếu chương: ${missing.slice(0, 15).join(", ")}${missing.length > 15 ? "…" : ""}.`);
+    if (replaced) warnings.push(`${replaced} chương đã có sẵn sẽ bị <b>ghi đè</b> bằng nội dung mới.`);
+    return { warnings, added, replaced };
+  }
+
+  function renderPreview() {
+    const { warnings, added, replaced } = analyse();
+    $("#clear").hidden = state.uploads.length === 0;
+    $("#preview").innerHTML = state.uploads.length ? state.uploads.map((u, i) => `
+      <div class="file-card">
+        <div class="file-head">
+          <span class="fname">📄 ${esc(u.name)}</span>
+          <span class="muted">${u.loading ? "Đang đọc file…" : u.error ? "" : `${u.chapters.length} chương`}</span>
+          <button class="link-btn" data-remove="${i}">Bỏ</button>
+        </div>
+        ${u.error ? `<p class="err">${esc(u.error)}</p>` : ""}
+        ${u.chapters.length ? `<table class="chap-table">
+          <thead><tr><th>Chương</th><th>Tên chương</th><th>Đoạn</th><th>Chữ</th><th></th></tr></thead>
+          <tbody>${u.chapters.map((c) => `
+            <tr title="${esc(c.first || "")}">
+              <td>${c.n}</td><td>${esc(c.title)}</td><td>${c.paras}</td><td>${c.words.toLocaleString("vi-VN")}</td>
+              <td><span class="badge ${c.status}">${c.status === "new" ? "Mới" : "Ghi đè"}</span></td>
+            </tr>`).join("")}</tbody></table>` : ""}
+      </div>`).join("") : `<p class="muted">Chưa có file nào.</p>`;
+    $("#warnings").innerHTML = warnings.map((w) => `<div class="notice warn">⚠ ${w}</div>`).join("");
+    const ready = state.uploads.some((u) => u.token && u.chapters.length) && !state.uploads.some((u) => u.loading);
+    const btn = $("#publish");
+    btn.disabled = !ready;
+    btn.textContent = ready ? `Đăng ${added} chương mới${replaced ? ` (ghi đè ${replaced})` : ""}` : "Đăng chương";
+  }
+
+  async function publish() {
+    const { replaced } = analyse();
+    if (replaced && !confirm(`${replaced} chương đã có sẽ bị ghi đè. Tiếp tục?`)) return;
+    const files = state.uploads.filter((u) => u.token && u.chapters.length).map((u) => ({ token: u.token, name: u.name }));
+    const data = await run(() => api("/api/publish", { json: { slug: state.slug, files, touchDate: $("#touch").checked } }));
+    if (!data) return;
+    state.uploads = [];
+    await refresh();
+    $("#status").insertAdjacentHTML("beforeend", `<div class="actions">
+      <a class="btn" href="${chapterUrl(state.story, data.first)}" target="_blank">Đọc chương ${data.first}</a>
+      <button class="btn ghost" type="button" onclick="state.tab='chapters';render()">Xem danh sách chương</button></div>`);
+  }
+
+  // ================= Khởi động =================
+  (async () => {
+    let online = false;
+    if (location.protocol.startsWith("http")) {
+      try { online = (await fetch("/api/ping")).ok; } catch { online = false; }
+    }
+    if (!online) {
+      $("#offline").hidden = false;
+      $("#app").classList.add("disabled");
+      $("#story-list").innerHTML = "";
+      render();
+      return;
+    }
+    try { await loadStories(); } catch (e) { showStatus(e.message, undefined, "error"); }
+    const s = params.get("s"), tab = params.get("tab");
+    if (params.get("new")) { state.view = "new"; renderSide(); render(); }
+    else if (s && state.stories.some((x) => x.slug === s)) await openStory(s, ["upload", "chapters", "info"].includes(tab) ? tab : "upload");
+    else if (state.stories.length === 1) await openStory(state.stories[0].slug);
+    else render();
+  })();
+</script>
+</body>
+</html>

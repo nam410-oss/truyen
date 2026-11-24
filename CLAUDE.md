@@ -25,23 +25,31 @@ Website đọc truyện cá nhân: chủ site tự đăng các bộ truyện (ch
 Chạy được ngay bằng cách mở file trong trình duyệt, không cần Node:
 
 - `index.html` (trang chủ), `truyen.html?s=<slug>` (trang truyện), `doc.html?s=<slug>&c=<n>` (trang đọc).
-- `assets/style.css` + `assets/app.js`: CSS/JS dùng chung (header, footer, ảnh bìa CSS, localStorage).
-- `data/stories.js`: bundle `window.STORIES` **sinh tự động**, không sửa tay.
-- Thêm/cập nhật truyện: tạo `content/truyen/<slug>/meta.json` (khai báo `sourceFiles` là các file .docx), rồi chạy:
-  `powershell -ExecutionPolicy Bypass -File scripts\import-docx.ps1`
-  Script sẽ ghi lại toàn bộ `chuong-XXX.md` và `data/stories.js`.
-- `scripts/import-docx.ps1` **phải lưu dạng UTF-8 có BOM** (PowerShell 5.1 đọc file không BOM theo ANSI, regex "Chương" sẽ không khớp). Có chế độ `-PreviewFile <docx>` chỉ in danh sách chương dạng JSON, không ghi gì.
+- `assets/style.css` + `assets/app.js`: CSS/JS dùng chung (header, footer, ảnh bìa CSS, localStorage, `GENRES`, `slugify`).
+- `data/stories.js`: bundle `window.STORIES` **sinh tự động**, không sửa tay. Trang public lọc bỏ truyện chưa có chương nào.
 
-### Trang "Đăng chương" (chỉ dùng trên máy mình)
+### Nguồn dữ liệu chuẩn: file chương `.md` (không phải .docx)
 
-- Chạy server cục bộ: `powershell -ExecutionPolicy Bypass -File scripts\server.ps1` → mở `http://localhost:8080/dang-chuong.html`.
-- `scripts/server.ps1` (HttpListener, chỉ nghe localhost) phục vụ web tĩnh + 2 API:
-  `POST /api/preview?name=` (lưu tạm vào `.upload-tmp/`, gọi import `-PreviewFile`) và
-  `POST /api/publish` (chuyển file vào `raw/`, thêm vào `sourceFiles`, cập nhật `updatedAt`, chạy import; lỗi thì khôi phục).
-- Mọi POST bắt buộc header `X-Admin: 1` + Origin localhost (chống trang lạ gửi request giả). Server cũng phải lưu UTF-8 có BOM.
-- Link "+ Đăng chương" trên header chỉ hiện khi chạy ở localhost/file://, không hiện trên web public. Khi deploy lên host tĩnh thì trang này không hoạt động (không có API), đó là chủ ý.
-- File .docx mới được lưu vào `raw/`; import tìm trong `raw/` trước, rồi tới thư mục gốc.
-- Tự đẩy lên GitHub (checkbox, mặc định bật): sau khi import thành công, server chỉ `git add/commit` **`content/` và `data/`** (không đụng file code) rồi `git push origin HEAD`. Push lỗi thì chương vẫn được lưu trên máy, trang hiện nút "Thử đẩy lại" (`POST /api/push`). Git được gọi qua `Diagnostics.Process` vì PS 5.1 coi stderr của git là lỗi.
+- **`content/truyen/<slug>/chuong-NNN.md` + `meta.json` là dữ liệu gốc.** Bundle được sinh từ các file này.
+- File .docx chỉ là đầu vào: nhập một file **ghi/ghi đè đúng các chương có trong file**, không xoá chương khác → các chỉnh sửa trên web (xoá, đổi tên, đổi số chương) được giữ lại khi đăng thêm chương.
+- Tên file `chuong-NNN.md` quyết định số chương; frontmatter `number` luôn được ghi khớp. Số chương có thể không liên tục (đã xoá chương).
+- `meta.json` có thể có `cover` (tên file ảnh trong thư mục truyện, vd `cover.jpg`); bundle đổi thành URL `content/truyen/<slug>/cover.jpg?v=<thời gian>`. `sourceFiles` chỉ là lịch sử các file đã nhập.
+- Logic dùng chung nằm ở `scripts/content-lib.ps1` (đọc docx, đọc/ghi chương & meta, `Build-Bundle`), được `import-docx.ps1` và `server.ps1` nạp vào. **Cả 3 file .ps1 phải lưu UTF-8 có BOM** (PowerShell 5.1 đọc file không BOM theo ANSI, regex "Chương" sẽ không khớp).
+- Dòng lệnh `scripts\import-docx.ps1`:
+  - không tham số → chỉ sinh lại `data/stories.js` (an toàn);
+  - `-Slug <slug> -File <docx>` → nhập chương từ 1 file;
+  - `-PreviewFile <docx>` → in danh sách chương dạng JSON, không ghi gì;
+  - `-RebuildFromDocx [-Slug]` → XOÁ hết chương rồi tạo lại từ `sourceFiles` (mất mọi chỉnh sửa, chỉ dùng để khôi phục).
+
+### Trang "Đăng & quản lý truyện" (chỉ dùng trên máy mình)
+
+- Chạy server cục bộ: `powershell -ExecutionPolicy Bypass -File scripts\server.ps1` → mở `http://localhost:8080/dang-truyen.html` (`dang-chuong.html` cũ chỉ còn chuyển hướng sang đây).
+- Trang gồm: danh sách truyện bên trái + "Đăng truyện mới"; mỗi truyện có 3 tab **Đăng chương** (kéo thả .docx, xem trước Mới/Ghi đè, cảnh báo thiếu chương / số chương nhảy xa), **Danh sách chương** (tìm, sửa số + tên chương, xoá chương), **Thông tin truyện** (sửa thông tin, ảnh bìa, xoá truyện — phải gõ `XOA`). Slug không đổi được sau khi tạo.
+- `scripts/server.ps1` (HttpListener, chỉ nghe localhost) — API xem danh sách ở đầu file. Mỗi thao tác ghi: sao lưu thư mục truyện + `data/stories.js` vào `.upload-tmp/`, lỗi thì khôi phục.
+- Mọi POST bắt buộc header `X-Admin: 1` + Origin localhost (chống trang lạ gửi request giả).
+- Link "+ Đăng truyện" trên header chỉ hiện khi chạy ở localhost/file://, không hiện trên web public. Khi deploy lên host tĩnh thì trang này không hoạt động (không có API), đó là chủ ý.
+- File .docx mới được lưu vào `raw/`; ảnh bìa: JPG/PNG/WEBP ≤ 8 MB, kiểm tra magic bytes.
+- Tự đẩy lên GitHub (checkbox, mặc định bật, nhớ trong `localStorage` `admin:autoPush`): sau mỗi thay đổi, server chỉ `git add/commit` **`content/` và `data/`** (không đụng file code) rồi `git push origin HEAD`, mỗi thao tác một commit có tên rõ ràng. Push lỗi thì thay đổi vẫn lưu trên máy, trang hiện nút "Thử đẩy lại" (`POST /api/push`). Git được gọi qua `Diagnostics.Process` vì PS 5.1 coi stderr của git là lỗi.
 
 ## Deploy
 
@@ -67,7 +75,7 @@ content/truyen/<slug>/
   cover.jpg                  # ảnh bìa (tỉ lệ 3:4)
   chuong-001.md              # mỗi chương 1 file, đánh số 3 chữ số
   chuong-002.md
-scripts/import-docx.ts       # script import docx → markdown
+scripts/import-docx.ts       # script import docx → markdown (bản demo hiện dùng scripts/*.ps1)
 src/app/                     # route Next.js
 src/components/              # component UI
 src/lib/content.ts           # đọc/parse content (chỉ chạy lúc build)
