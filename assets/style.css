@@ -299,6 +299,19 @@ input[type=checkbox] { accent-color: var(--primary); }
 .chap-table .in-n { width: 84px; }
 .chap-table tr.editing td { background: var(--primary-soft); }
 #status:empty { display: none; }
+.login-panel { max-width: 720px; margin: 12px 0 0; }
+.login-panel p { line-height: 1.6; }
+.token-help { background: var(--bg-soft); border: 1px solid var(--line); border-radius: 6px; padding: 10px 14px; margin: 12px 0; font-size: 13px; }
+.token-help summary { cursor: pointer; font-weight: 500; color: var(--text-strong); }
+.token-help ol { margin: 10px 0 2px; padding-left: 20px; line-height: 1.75; }
+.token-help a { color: var(--primary); text-decoration: underline; }
+.login-form { display: flex; gap: 10px; margin-top: 12px; }
+.login-form input { flex: 1; min-width: 0; background: var(--input-bg); border: 1px solid var(--line-strong); color: var(--text); border-radius: 4px; padding: 9px 12px; font: inherit; font-family: Consolas, monospace; }
+.login-form input:focus { outline: 0; border-color: var(--primary); }
+.muted.small { font-size: 12px; line-height: 1.6; }
+.account-bar { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; font-size: 13px; color: var(--text-soft); margin: 4px 0 8px; }
+.account-bar .push-toggle { margin: 0; }
+.link-btn.plain { color: var(--primary); }
 
 /* ============ Responsive ============ */
 @media (max-width: 760px) {

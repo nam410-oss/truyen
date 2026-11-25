@@ -15,19 +15,39 @@
   <nav class="crumbs"><a href="index.html">Trang chủ</a><span>›</span>Đăng & quản lý truyện</nav>
   <div class="sec-title"><h2>Đăng & quản lý truyện</h2></div>
 
-  <div class="notice error" id="offline" hidden>
-    <b>Chưa kết nối được server quản lý.</b> Trang này cần chạy qua server cục bộ:
-    <ol>
-      <li>Mở PowerShell tại thư mục dự án (<code>d:\truyen</code>).</li>
-      <li>Chạy: <code>powershell -ExecutionPolicy Bypass -File scripts\server.ps1</code></li>
-      <li>Mở <a href="http://localhost:8080/dang-truyen.html">http://localhost:8080/dang-truyen.html</a></li>
-    </ol>
-  </div>
+  <p class="muted" id="loading">Đang kết nối…</p>
 
-  <label class="check push-toggle"><input type="checkbox" id="auto-push"> Tự đẩy lên web (GitHub) sau mỗi thay đổi</label>
+  <!-- Đăng nhập GitHub: dùng khi không có server cục bộ (vd. trên web GitHub Pages) -->
+  <section class="panel login-panel" id="login" hidden>
+    <h3 class="panel-title">Đăng nhập bằng GitHub</h3>
+    <p>Trang quản lý ghi truyện thẳng vào repo <b id="repo-name"></b> trên GitHub. Chỉ người có <b>token</b> được cấp quyền ghi vào repo mới đăng hoặc sửa được truyện.</p>
+    <details class="token-help" id="token-help" open>
+      <summary>Cách tạo token (chỉ cần làm 1 lần trên mỗi thiết bị)</summary>
+      <ol>
+        <li>Mở <a id="token-link" target="_blank" rel="noopener">trang tạo token của GitHub</a> (đăng nhập GitHub nếu được hỏi).</li>
+        <li><b>Token name</b>: gõ tên bất kỳ, vd. <code>Đăng truyện</code>. <b>Expiration</b>: chọn thời hạn, vd. 90 ngày.</li>
+        <li><b>Repository access</b>: chọn <b>Only select repositories</b> → chọn repo <b id="repo-only"></b>.</li>
+        <li><b>Permissions</b> → <b>Repository permissions</b> → <b>Contents</b>: chọn <b>Read and write</b>.</li>
+        <li>Bấm <b>Generate token</b>, copy mã bắt đầu bằng <code>github_pat_</code> rồi dán vào ô dưới.</li>
+      </ol>
+    </details>
+    <form id="login-form" class="login-form">
+      <input type="password" id="token" placeholder="github_pat_…" autocomplete="off" spellcheck="false" aria-label="Token GitHub">
+      <button class="btn" type="submit">Đăng nhập</button>
+    </form>
+    <label class="check"><input type="checkbox" id="remember" checked> Ghi nhớ đăng nhập trên thiết bị này</label>
+    <p class="muted small">Token chỉ lưu trong trình duyệt của bạn và chỉ gửi tới GitHub. Không chia sẻ token cho ai. Nếu lỡ lộ, vào GitHub → Settings → Developer settings → Personal access tokens để xoá token đó.</p>
+    <p class="muted small" id="local-hint" hidden>Đang mở trên máy mình? Cũng có thể chạy server cục bộ: <code>powershell -ExecutionPolicy Bypass -File scripts\server.ps1</code> rồi mở <a href="http://localhost:8080/dang-truyen.html">http://localhost:8080/dang-truyen.html</a> (không cần token).</p>
+  </section>
+
+  <div class="account-bar" id="account" hidden>
+    <span id="account-text"></span>
+    <label class="check push-toggle" id="push-wrap" hidden><input type="checkbox" id="auto-push"> Tự đẩy lên web (GitHub) sau mỗi thay đổi</label>
+    <button class="link-btn plain" id="logout" hidden>Đăng xuất</button>
+  </div>
   <div id="status"></div>
 
-  <div class="admin-grid" id="app">
+  <div class="admin-grid" id="app" hidden>
     <aside>
       <button class="btn block" id="new-story">+ Đăng truyện mới</button>
       <ul class="story-pick" id="story-list"><li class="muted pad">Đang tải…</li></ul>
@@ -38,9 +58,12 @@
 
 <script src="data/stories.js"></script>
 <script src="assets/app.js"></script>
+<script src="assets/admin-content.js"></script>
+<script src="assets/admin-github.js"></script>
 <script>
   renderChrome();
   const API_HEADERS = { "X-Admin": "1" };
+  let backend = null;   // LocalBackend (server cục bộ) hoặc GitHubBackend (đăng nhập GitHub)
   const state = {
     stories: [], slug: null, story: null, chapters: [],
     view: "empty",          // "empty" | "new" | "story"
@@ -64,6 +87,24 @@
     if (!data.ok) throw new Error(data.error || "Lỗi không xác định");
     return data;
   }
+
+  // Server cục bộ (scripts/server.ps1): file Word được lưu vào raw/, có thể tắt tự đẩy lên GitHub.
+  const LocalBackend = {
+    mode: "local",
+    listStories: async () => (await api("/api/stories")).stories,
+    getStory: (slug) => api(`/api/story?slug=${encodeURIComponent(slug)}`),
+    saveStory: (body) => api("/api/story/save", { json: body }),
+    saveCover: (slug, file) => {
+      const ext = (file.name.split(".").pop() || "").toLowerCase();
+      return api(`/api/story/cover?slug=${encodeURIComponent(slug)}&ext=${encodeURIComponent(ext)}&push=${autoPush.checked ? 1 : 0}`, { body: file });
+    },
+    deleteStory: (slug) => api("/api/story/delete", { json: { slug, confirm: true } }),
+    updateChapter: (slug, n, newN, title) => api("/api/chapter/update", { json: { slug, n, newN, title } }),
+    deleteChapter: (slug, n) => api("/api/chapter/delete", { json: { slug, n } }),
+    preview: (file) => api(`/api/preview?name=${encodeURIComponent(file.name)}`, { body: file }),
+    publish: (slug, files, touchDate) => api("/api/publish", { json: { slug, files, touchDate } }),
+    push: async () => (await fetch("/api/push", { method: "POST", headers: API_HEADERS })).json(),
+  };
 
   function setBusy(on) { busy = on; $("#app").classList.toggle("busy", on); }
 
@@ -99,18 +140,18 @@
     if (!e.target.classList.contains("retry-push")) return;
     e.target.disabled = true; e.target.textContent = "Đang đẩy…";
     let push;
-    try { push = await (await fetch("/api/push", { method: "POST", headers: API_HEADERS })).json(); }
-    catch (err) { push = { ok: false, message: "Mất kết nối tới server: " + err.message }; }
+    try { push = await backend.push(); }
+    catch (err) { push = { ok: false, message: "Mất kết nối: " + err.message }; }
     e.target.closest(".notice").outerHTML = pushNotice(push);
   });
 
   // ================= Tải dữ liệu =================
   async function loadStories() {
-    state.stories = (await api("/api/stories")).stories;
+    state.stories = await backend.listStories();
     renderSide();
   }
   async function loadStory(slug) {
-    const data = await api(`/api/story?slug=${encodeURIComponent(slug)}`);
+    const data = await backend.getStory(slug);
     state.story = data.story;
     state.chapters = data.chapters;
   }
@@ -264,17 +305,12 @@
       const coverFile = !s && form.cover.files[0];
       if (coverFile && coverFile.size > 8 * 1024 * 1024) { showStatus("Ảnh bìa quá lớn (tối đa 8 MB).", undefined, "error"); return; }
 
-      const data = await run(() => api("/api/story/save", { json: { slug, isNew: !s, ...fields } }));
+      const data = await run(() => backend.saveStory({ slug, isNew: !s, ...fields }));
       if (!data) return;
-      if (coverFile) await run(() => uploadCover(slug, coverFile));
-      if (!s) { await openStory(slug, "upload"); await loadStories(); renderSide(); }
+      if (coverFile) await run(() => backend.saveCover(slug, coverFile));
+      if (!s) { await loadStories(); await openStory(slug, "upload"); }
       else await refresh();
     });
-  }
-
-  function uploadCover(slug, file) {
-    const ext = (file.name.split(".").pop() || "").toLowerCase();
-    return api(`/api/story/cover?slug=${encodeURIComponent(slug)}&ext=${encodeURIComponent(ext)}&push=${autoPush.checked ? 1 : 0}`, { body: file });
   }
 
   // ================= Tab: Thông tin truyện =================
@@ -303,19 +339,19 @@
       const f = e.target.files[0];
       if (!f) return;
       if (f.size > 8 * 1024 * 1024) { showStatus("Ảnh bìa quá lớn (tối đa 8 MB).", undefined, "error"); return; }
-      if (await run(() => uploadCover(s.slug, f))) await refresh();
+      if (await run(() => backend.saveCover(s.slug, f))) await refresh();
     });
     const rm = $("#cover-remove");
     if (rm) rm.addEventListener("click", async () => {
       if (!confirm("Xoá ảnh bìa? Web sẽ quay lại dùng bìa tự tạo từ tên truyện.")) return;
       const body = { slug: s.slug, isNew: false, removeCover: true, title: s.title, author: s.author, translator: s.translator, genres: s.genres, status: s.status, featured: s.featured, description: s.description };
-      if (await run(() => api("/api/story/save", { json: body }))) await refresh();
+      if (await run(() => backend.saveStory(body))) await refresh();
     });
     $("#delete-story").addEventListener("click", async () => {
       const typed = prompt(`Xoá truyện "${s.title}" cùng ${state.chapters.length} chương?\nThao tác này không hoàn tác được trên web.\n\nGõ XOA để xác nhận:`);
       if (typed === null) return;
       if (typed.trim().toUpperCase() !== "XOA") { showStatus('Chưa xoá: bạn cần gõ đúng chữ XOA để xác nhận.', undefined, "error"); return; }
-      if (await run(() => api("/api/story/delete", { json: { slug: s.slug, confirm: true } }))) {
+      if (await run(() => backend.deleteStory(s.slug))) {
         state.view = "empty"; state.slug = null; state.story = null;
         await refresh();
       }
@@ -369,7 +405,7 @@
     else if (b.dataset.del) {
       const n = Number(b.dataset.del), c = state.chapters.find((x) => x.n === n);
       if (!confirm(`Xoá chương ${n}: "${c.title}"?\nNội dung chương sẽ bị xoá khỏi web.`)) return;
-      if (await run(() => api("/api/chapter/delete", { json: { slug: state.slug, n } }))) { await refresh(); }
+      if (await run(() => backend.deleteChapter(state.slug, n))) { await refresh(); }
     }
   });
   $("#main").addEventListener("keydown", (e) => {
@@ -387,7 +423,7 @@
     if (!title) { showStatus("Tên chương không được để trống.", undefined, "error"); return; }
     if (newN === c.n && title === c.title) { state.editing = null; renderChapterRows(); return; }
     if (newN !== n && state.chapters.some((x) => x.n === newN)) { showStatus(`Đã có chương ${newN}. Hãy xoá hoặc đổi số chương ${newN} trước.`, undefined, "error"); return; }
-    if (await run(() => api("/api/chapter/update", { json: { slug: state.slug, n, newN, title } }))) {
+    if (await run(() => backend.updateChapter(state.slug, n, newN, title))) {
       state.editing = null;
       await refresh();
     }
@@ -439,7 +475,7 @@
       state.uploads.push(item);
       renderPreview();
       try {
-        const data = await api(`/api/preview?name=${encodeURIComponent(file.name)}`, { body: file });
+        const data = await backend.preview(file);
         Object.assign(item, { token: data.token, chapters: data.chapters, loading: false });
       } catch (err) {
         Object.assign(item, { loading: false, error: err.message });
@@ -508,7 +544,7 @@
     const { replaced } = analyse();
     if (replaced && !confirm(`${replaced} chương đã có sẽ bị ghi đè. Tiếp tục?`)) return;
     const files = state.uploads.filter((u) => u.token && u.chapters.length).map((u) => ({ token: u.token, name: u.name }));
-    const data = await run(() => api("/api/publish", { json: { slug: state.slug, files, touchDate: $("#touch").checked } }));
+    const data = await run(() => backend.publish(state.slug, files, $("#touch").checked));
     if (!data) return;
     state.uploads = [];
     await refresh();
@@ -518,17 +554,20 @@
   }
 
   // ================= Khởi động =================
-  (async () => {
-    let online = false;
-    if (location.protocol.startsWith("http")) {
-      try { online = (await fetch("/api/ping")).ok; } catch { online = false; }
-    }
-    if (!online) {
-      $("#offline").hidden = false;
-      $("#app").classList.add("disabled");
-      $("#story-list").innerHTML = "";
-      render();
-      return;
+  // Có server cục bộ -> dùng server. Không có (vd. trên GitHub Pages) -> đăng nhập GitHub.
+  async function start() {
+    $("#loading").hidden = true;
+    $("#login").hidden = true;
+    $("#app").hidden = false;
+    $("#account").hidden = false;
+    if (backend.mode === "local") {
+      $("#account-text").innerHTML = `Đang dùng <b>server trên máy</b>.`;
+      $("#push-wrap").hidden = false;
+      $("#logout").hidden = true;
+    } else {
+      $("#account-text").innerHTML = `Đã đăng nhập GitHub: <b>@${esc(backend.user)}</b> · lưu thẳng vào repo <b>${esc(backend.repo.owner)}/${esc(backend.repo.repo)}</b>`;
+      $("#push-wrap").hidden = true;
+      $("#logout").hidden = false;
     }
     try { await loadStories(); } catch (e) { showStatus(e.message, undefined, "error"); }
     const s = params.get("s"), tab = params.get("tab");
@@ -536,6 +575,57 @@
     else if (s && state.stories.some((x) => x.slug === s)) await openStory(s, ["upload", "chapters", "info"].includes(tab) ? tab : "upload");
     else if (state.stories.length === 1) await openStory(state.stories[0].slug);
     else render();
+  }
+
+  function showLogin(error) {
+    $("#loading").hidden = true;
+    $("#app").hidden = true;
+    $("#account").hidden = true;
+    $("#login").hidden = false;
+    $("#repo-name").textContent = `${GitHubBackend.repo.owner}/${GitHubBackend.repo.repo}`;
+    $("#repo-only").textContent = GitHubBackend.repo.repo;
+    $("#token-link").href = GitHubBackend.tokenSettingsUrl;
+    $("#local-hint").hidden = !isLocal;
+    if (error) showStatus(error, undefined, "error"); else $("#status").innerHTML = "";
+    $("#token").focus();
+  }
+
+  $("#login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector("button");
+    btn.disabled = true; btn.textContent = "Đang kiểm tra…";
+    try {
+      await GitHubBackend.login($("#token").value, $("#remember").checked);
+      $("#token").value = "";
+      $("#status").innerHTML = "";
+      backend = GitHubBackend;
+      await start();
+    } catch (err) {
+      showStatus(err.message, undefined, "error");
+    } finally {
+      btn.disabled = false; btn.textContent = "Đăng nhập";
+    }
+  });
+
+  $("#logout").addEventListener("click", () => {
+    if (!confirm("Đăng xuất khỏi GitHub trên thiết bị này?")) return;
+    GitHubBackend.logout();
+    Object.assign(state, { stories: [], slug: null, story: null, chapters: [], view: "empty", uploads: [] });
+    showLogin();
+  });
+
+  (async () => {
+    let local = false;
+    if (isLocal && location.protocol.startsWith("http")) {
+      try { local = (await fetch("/api/ping")).ok; } catch { local = false; }
+    }
+    if (local) { backend = LocalBackend; return start(); }
+    try {
+      if (await GitHubBackend.resume()) { backend = GitHubBackend; return start(); }
+      showLogin();
+    } catch (e) {
+      showLogin(e.message);
+    }
   })();
 </script>
 </body>

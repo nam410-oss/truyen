@@ -50,6 +50,16 @@ Chạy được ngay bằng cách mở file trong trình duyệt, không cần N
 - Link "+ Đăng truyện" trên header chỉ hiện khi chạy ở localhost/file://, không hiện trên web public. Khi deploy lên host tĩnh thì trang này không hoạt động (không có API), đó là chủ ý.
 - File .docx mới được lưu vào `raw/`; ảnh bìa: JPG/PNG/WEBP ≤ 8 MB, kiểm tra magic bytes.
 - Tự đẩy lên GitHub (checkbox, mặc định bật, nhớ trong `localStorage` `admin:autoPush`): sau mỗi thay đổi, server chỉ `git add/commit` **`content/` và `data/`** (không đụng file code) rồi `git push origin HEAD`, mỗi thao tác một commit có tên rõ ràng. Push lỗi thì thay đổi vẫn lưu trên máy, trang hiện nút "Thử đẩy lại" (`POST /api/push`). Git được gọi qua `Diagnostics.Process` vì PS 5.1 coi stderr của git là lỗi.
+- Server tự `git pull --ff-only` trước mỗi thao tác ghi và khi tải danh sách truyện (`Sync-FromGit`), để nhận các thay đổi đã làm trên web (chế độ GitHub) và không bị GitHub từ chối khi đẩy.
+
+### Chế độ "Đăng nhập GitHub" (dùng trang quản lý ngay trên web)
+
+- `dang-truyen.html` chọn backend lúc khởi động: có server cục bộ (`/api/ping`, chỉ thử khi chạy ở localhost) → `LocalBackend`; không có → `GitHubBackend` (`assets/admin-github.js`), hiện form đăng nhập. Cả hai có cùng giao diện hàm (`listStories`, `getStory`, `saveStory`, `saveCover`, `deleteStory`, `updateChapter`, `deleteChapter`, `preview`, `publish`, `push`) — **thêm tính năng thì phải làm ở cả server.ps1 lẫn admin-github.js**.
+- Đăng nhập = **fine-grained personal access token** (chỉ repo `truyen`, quyền `Contents: Read and write`). Không dùng OAuth vì GitHub Pages là web tĩnh, không giữ được client secret. Token lưu `sessionStorage` (+ `localStorage` nếu chọn "Ghi nhớ"), key `admin:ghToken`, chỉ gửi tới `api.github.com`. Quyền thật sự do GitHub kiểm tra; trang `dang-truyen.html` công khai nhưng không có token thì không làm gì được.
+- Mỗi thao tác = 1 commit qua Git Data API (blobs → tree với `base_tree`, xoá file bằng `sha: null` → commit → PATCH ref không force). Ref bị đổi giữa chừng (422) thì tự làm lại tối đa 3 lần trên bản mới nhất. Đọc file qua Contents API (`Accept: application/vnd.github.raw+json`, `cache: "no-store"`, `ref=<sha>`).
+- `assets/admin-content.js` = bản JS của `content-lib.ps1` (đọc .docx bằng `DecompressionStream`, không thư viện; `chapterMd`/`parseMd`/`prettyJson`/`bundleText`). **Định dạng phải giống hệt bản PowerShell** (đã kiểm tra: 158 chương từ 12 file .docx khớp từng ký tự, meta.json/chương đọc-ghi lại y nguyên, bundle khớp `Build-Bundle`). Sửa định dạng ở một bên thì sửa cả bên kia.
+- Chế độ GitHub không lưu file .docx gốc (repo public, `raw/` không lên GitHub) — chỉ ghi tên vào `sourceFiles`, nên `-RebuildFromDocx` không dựng lại được các chương đăng từ web.
+- Header hiện "+ Đăng truyện" khi chạy local hoặc đã đăng nhập GitHub trên thiết bị; footer luôn có link nhỏ "Quản lý truyện".
 
 ## Deploy
 

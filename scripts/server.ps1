@@ -154,6 +154,17 @@ function Publish-ToGit([string]$message) {
   return $r
 }
 
+# Kéo các thay đổi đã đăng từ trang quản lý trên web (chế độ đăng nhập GitHub) về máy trước khi đọc/ghi,
+# để lần đẩy sau không bị GitHub từ chối. Chỉ fast-forward; lỗi (mất mạng, lệch nhánh) thì bỏ qua.
+$script:LastSync = [datetime]::MinValue
+function Sync-FromGit([switch]$Force) {
+  if (-not (Test-Path (Join-Path $Root '.git'))) { return }
+  if (-not $Force -and ((Get-Date) - $script:LastSync).TotalSeconds -lt 20) { return }
+  $script:LastSync = Get-Date
+  $r = Invoke-Git @('pull', '--ff-only', '-q') 30
+  if ($r.code -ne 0) { Write-Warning "git pull bỏ qua: $(($r.out -split "`n")[0])" }
+}
+
 # ---------- Sao lưu / khôi phục cho mọi thao tác ghi ----------
 function Backup-State([string]$slug) {
   $bak = Join-Path $TmpDir ('bak-' + [guid]::NewGuid().ToString('N'))
@@ -173,6 +184,7 @@ function Restore-State($snap) {
 
 # Chạy $action (trả về hashtable có message, commit, ...). Lỗi -> khôi phục. Xong -> push nếu được yêu cầu.
 function Invoke-Mutation($ctx, [string]$slug, [bool]$push, [scriptblock]$action) {
+  Sync-FromGit
   $snap = Backup-State $slug
   try {
     $res = @(& $action)[-1]
@@ -191,6 +203,7 @@ function Invoke-Mutation($ctx, [string]$slug, [bool]$push, [scriptblock]$action)
 
 # ---------- API: đọc ----------
 function Invoke-ListStories($ctx) {
+  Sync-FromGit -Force
   $list = @(foreach ($metaFile in @(Get-ChildItem (Join-Path $Root 'content\truyen\*\meta.json') -ErrorAction SilentlyContinue)) {
     $slug = Split-Path -Leaf $metaFile.DirectoryName
     $meta = Read-Meta $Root $slug

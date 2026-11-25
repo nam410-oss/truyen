@@ -66,6 +66,10 @@ function coverHTML(story, { badge = "" } = {}) {
 
 // Link "Đăng chương" chỉ hiện khi chạy trên máy mình (server cục bộ hoặc mở file trực tiếp).
 const isLocal = location.protocol === "file:" || ["localhost", "127.0.0.1"].includes(location.hostname);
+// Đã đăng nhập GitHub ở trang quản lý trên thiết bị này -> cũng hiện link "Đăng truyện".
+const hasAdminLogin = (() => {
+  try { return !!(localStorage.getItem("admin:ghToken") || sessionStorage.getItem("admin:ghToken")); } catch { return false; }
+})();
 
 // Header + tagline + footer dùng chung.
 function renderChrome(tagline) {
@@ -86,7 +90,7 @@ function renderChrome(tagline) {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
         </button>
       </form>
-      ${isLocal ? `<a class="admin-link" href="dang-truyen.html">+ Đăng truyện</a>` : ""}
+      ${isLocal || hasAdminLogin ? `<a class="admin-link" href="dang-truyen.html">+ Đăng truyện</a>` : ""}
       <a class="menu-btn" href="index.html" aria-label="Menu">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </a>
@@ -103,7 +107,7 @@ function renderChrome(tagline) {
           <p><b>${SITE_NAME}</b> - Trang <a href="index.html">đọc truyện online</a> cá nhân, cập nhật các bộ truyện dịch tiên hiệp, huyền huyễn hay nhất. Hỗ trợ đọc trên điện thoại và máy tính.</p>
           <p>Mọi nội dung truyện đều do chủ trang biên dịch. Vui lòng không sao chép khi chưa được cho phép.</p>
         </div>
-        <div class="right"><a href="#">Liên hệ</a> | <a href="#">Điều khoản</a></div>
+        <div class="right"><a href="#">Liên hệ</a> | <a href="#">Điều khoản</a> | <a href="dang-truyen.html" rel="nofollow">Quản lý truyện</a></div>
       </div>
     </footer>`);
   }
