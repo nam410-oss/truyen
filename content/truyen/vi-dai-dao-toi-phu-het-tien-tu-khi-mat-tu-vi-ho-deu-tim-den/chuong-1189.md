@@ -1,377 +1,215 @@
 ---
 number: 1189
-title: "Thấm thoát (2)"
+title: "Y Y bịn rịn không rời (1)"
 publishedAt: "2026-11-28"
 ---
 
-Chuyển sinh đến thế giới này, đã qua bao nhiêu năm tháng, trải qua bao nhiêu thị phi, nếu không nghĩ kỹ lại, e rằng ta sắp không nhớ nổi.
+Cung điện u ám, là nơi chán nhất.
 
-Những ngày ở thế giới này chắc chắn nhiều hơn kiếp trước nhiều, nếu không có ký ức kiếp trước, có lẽ ta đã hoàn toàn là người của thế giới này.
+Nghe người lớn nói, ở một không gian bên ngoài thế giới này, có một thế giới vô cùng to lớn, nơi đó có đủ loại kẻ kỳ quái.
 
-Có điều, thế giới này và thế giới trước ngoài khác biệt lớn nhất là tư cách tu hành ra, vẫn có nhiều điểm chung, điều này cũng giúp ta tiện hơn nhiều.
+“Y Y tiểu thư, sao người lại chạy đến đây nữa?
 
-Gió mát ở đầu đỉnh hôm nay vẫn trong lành, cảm giác mặt trời lặn từ từ lên ta rất thích.
+Gia chủ đã nói rồi, gần đây tranh đấu bên ngoài ngày càng dữ dội, lo bị người đối địch bắt đi.
 
-Việc của trưởng lão tông môn đã xong, gần đây cũng không định ra ngoài, hôm nay hình như còn là một ngày lễ, vậy lâu lắm mới nghỉ ngơi chút.
+Quên chuyện tiểu tử của minh hữu lần trước bị rút gân lột da rồi sao?”
 
-“Sư, sư tôn……”
+Nữ tổng thị chăm sóc ta như thường lệ phát hiện vị trí của ta, bảo ta mau quay về trong cung điện.
 
-Từ dưới lầu cao truyền đến giọng nói mềm mại, ta cúi đầu nhìn, là tiểu đồ đệ ta mới nhặt về không lâu.
+Hơn nữa vẫn dùng chuyện đồn đó dọa ta, nhưng dù ban đầu ta có sợ đến đâu, đến giờ cũng hơi không cảm giác nữa.
 
-Không lâu thì…… hình như cũng đã mười năm rồi.
+Làm gì có nhiều nguy hiểm thế, nóc tòa điện cao này chẳng phải cũng ở trong cung điện sao?
 
-“Sao thế, Nhiễm Nhiễm.”
+Còn những nhà gỗ điện đá phía xa kia, đều có lượng lớn thị vệ.
 
-Ta nhìn nàng nói, giờ nàng đã hoàn toàn lột xác thành một thiếu nữ tuổi xuân, nhưng vẫn luôn không có sự hoạt bát đó, ngược lại, ta thậm chí cảm thấy nàng còn có chút chín chắn khác với tuổi này.
+Vì sao ta vẫn chỉ có thể ở trong cung điện, hơn nữa, ta cũng đã có thể bảo vệ tốt bản thân rồi.
 
-Tóm lại, từ khi Bạch Diệu Diệu và Sở Nhược Tuyết lần lượt rời đi, nơi này vẫn luôn chỉ còn một mình ta.
+Đây là nơi duy nhất ta có thể thấy thế giới bên ngoài.
 
-Giờ đột nhiên thành hai người, ta vẫn hơi chưa quen.
+Thế giới bên ngoài, thật sự nguy hiểm như người lớn nói sao?
 
-Ta không quen chủ động nói chuyện vô ích với người khác, nàng thì rất e thẹn, nên khoảng thời gian này phần lớn cũng đều trầm mặc.
+Ừm…… thuộc hạ của phụ thân quả thật liên tục thay đổi, những người biến mất đó, chẳng lẽ thật sự đều chết rồi sao.
 
-“Hôm, hôm nay là, là đại lễ tân xuân, con, con muốn cùng sư tôn về, về tiểu trấn……”
+“Đi thôi, tiểu thư, hôm nay gia chủ về, theo lễ nghi nên đi tế lễ thỉnh an, người cũng phải có mặt.”
 
-Đồng Nhiễm Nhiễm cúi đầu đáp, giọng điệu càng lúc càng thấp.
+Nữ tổng thị kéo tay ta, cưỡng ép đưa ta rời nóc lầu.
 
-Tiểu nha đầu này, chẳng lẽ là mặc định ta sẽ không đồng ý?
+Trên đường đến tế đàn, ta có thể thấy nhiều gương mặt vội vã, lại lâu rồi không gặp, họ đang chạy đi chạy lại, miệng không ngừng trò chuyện.
 
-“Tiểu trấn……là tiểu trấn gần thôn con sao?
+“Haizz, tình hình chiến sự tiền tuyến lại không tốt.”
 
-Nếu ngự kiếm phi hành thì cũng không cần lâu, vậy đi xem thử.”
+“Phải đó, lần này lại tổn thất nặng nề, trí mưu của đối diện cũng quá……”
 
-Ta đơn giản đáp, từ lầu cao nhẹ nhàng nhảy xuống, đến trước mặt thiếu nữ thấp hơn ta nửa người.
+“Câm miệng, lời này nếu để mấy vị khách khanh nghe thấy, chúng ta chắc chắn không yên đâu.”
 
-Phải rồi, nàng hồi nhỏ chắc thường cùng người nhà lên tiểu trấn ăn lễ.
+“Hừ, mấy kẻ chỉ biết đặt đầu óc vào tranh sủng, sao dẫn chúng ta thắng được?
 
-Nếu không có tà tu đồ thôn luyện hồn, nàng chắc vẫn sống những ngày no đủ không lo âu nhỉ?
+Ta thấy sớm muộn gì nơi này cũng bị……”
 
-“A, thật, thật sao?”
+“Hai ngươi điên rồi à, đừng nói chuyện này nữa, ngươi xem Y Y tiểu thư ở kia kìa……
 
-“Ừm, đi thôi.”
+Khụ khụ, ừm, các ngươi nghe nói chưa?
 
-Ta đưa tay đơn giản nói, nàng giờ mới nhập tiên ban, ngự kiếm thuật còn chưa quen, nên ta định trực tiếp mang nàng đi.
+Gia chủ hôm qua về, còn dẫn theo một nhân tộc kỳ lạ.”
 
-Nhưng theo thiên phú của nàng, sau này chắc chắn có thể vượt qua những thiên tài mà ta biết.
+“Ý ngươi là kiếm tu đó……?
 
-“Được…… không, không đúng, sư tôn, phiền người đợi con một chút!”
+Nghe nói hôm nay hắn còn phải tỷ thí với quản sự Dư Nguyên, nhìn dáng vẻ hình như là nghiêm túc, không biết có xảy ra chuyện không, gia chủ lại cũng không đi ngăn cản.”
 
-Đồng Nhiễm Nhiễm đột nhiên ngẩng đầu nghiêm túc nhìn ta nói, rồi chạy chậm về sân của mình.
+Tuy họ phát hiện ra ta, nhưng ta đã nghe hết cuộc trò chuyện của họ từ lâu.
 
-Ta thì đứng tại chỗ lặng lẽ chờ đợi, tiểu gia hỏa đáng thương, tiếc là ta thường ra ngoài, còn để nàng một mình canh giữ ngọn núi này.
+Có điều, ta không định nói gì hay làm gì, chuyện thế này đã xảy ra rất nhiều lần.
 
-Hay vài hôm nữa giới thiệu vài bạn đồng trang lứa cho nàng?
+Ta cũng rất không ưa mấy kẻ vô dụng đó, chỉ cần đợi thêm mấy năm, ta nhất định sẽ trở thành trợ thủ đắc lực của phụ thân, rồi cuối cùng kế thừa tất cả, thống nhất lại Vũ tộc.
 
-Hình như mấy năm nay Lý Hoa đột nhiên có một tiểu muội……
+Có điều họ hình như nhắc đến biểu thúc Dư Nguyên?
 
-“Sư tôn, người xem……”
+Ông ấy nổi tiếng nhờ kiếm thức, sao lại có người tìm ông ấy tỷ kiếm pháp?
 
-Không bao lâu, Đồng Nhiễm Nhiễm thay một bộ trường quần màu đỏ thắm lại chạy chậm đến trước mặt ta.
+Hơn nữa biểu thúc Dư Nguyên là người đặc biệt cô độc, đối với bại tướng dưới tay chẳng hề nể tình.
 
-Chất liệu trường quần rất bình thường, nhưng phối với khuôn mặt xinh xắn ngây thơ dễ thương của nàng, lập tức trở nên vô cùng hợp.
+Lần đầu tiên ta thấy người chết, chính là lúc ông ấy tiện tay chém giết mấy kẻ khiêu khích mình trong cung điện.
 
-Đôi mắt to của nàng dò xét nhìn ta, khẽ mỉm cười, chờ ta khen.
+……Tuy ông ấy rất kỳ lạ, nhưng đối với ta vẫn không tệ, hơn nữa thế giới vốn lấy thực lực làm tôn, nhân tộc đó không biết sống chết, cũng thật đáng đời.
 
-“Sao mua loại y phục này?
+“Bộc nhân, ngươi nói biểu thúc Dư Nguyên và tu sĩ nhân tộc đó tỷ thí ở đâu?”
 
-Con lấy đâu ra linh thạch, chẳng phải không lâu trước đã tiêu hết vào mua đan dược sao.”
+Ta mở miệng hỏi, cố ý dừng bước, tổng nữ thị đến từ chủng tộc thấp hèn, sức rất nhỏ, thật ra chỉ cần ta không muốn, bà ta căn bản không làm gì được ta.
 
-“Ưm…… xin, xin lỗi sư tôn, con, con biết không nên tiêu linh thạch vào đây…… linh thạch, là, là con đi làm tạp vụ ngoại môn kiếm được.
+Chẳng qua chỉ là mụ già biết mách phụ thân thôi!
 
-Con không muốn mặc không đẹp bên cạnh sư tôn.
+“Cái này…… tiểu thư, chúng ta vẫn nên chuẩn bị việc tế lễ trước thì hơn.”
 
-Sư tôn người xem, con còn thừa một trăm linh thạch, có thể mời sư tôn ăn cơm, mua y phục cho sư tôn, cho sư tôn……”
+Bà ta sắc mặt khó coi nhìn ta, do dự nói.
 
-Đồng Nhiễm Nhiễm tay cầm một túi linh thạch rách rách, đếm linh thạch trong đó mỉm cười nói.
+“Tế lễ chẳng phải tổ chức sáng sớm ngày mai sao?
 
-“Bộ y phục này của con tốn bao nhiêu?”
+Thời gian còn lại còn nhiều, ngươi gấp gì, còn làm phiền bản tiểu thư nữa, thì cho ngươi và tộc nhân ngươi cút về hoang nguyên, bị dị loạn xâm thực!”
 
-Ta hỏi tiếp, chắc không quá một linh thạch.
+“Tiểu thư……”
 
-“Cái, cái này là con tự mua vải làm, không tốn bao nhiêu, ông chủ ngoại môn thấy con làm việc nghiêm túc, nửa linh thạch là cho con.”
+Sắc mặt bà ta cuối cùng cũng có vẻ sợ hãi, bàn tay run rẩy từ từ buông ta ra, ngồi xổm nửa người xuống đất nức nở.
 
-Đồng Nhiễm Nhiễm ngây ngô nhìn ta, mang chút cảm ơn đáp tiếp, nàng từ trước đến nay có hỏi có đáp, rất đơn thuần.
+Mà ta cũng thấy khuôn mặt đầy nếp nhăn của bà ta.
 
-“Con tự kiếm được một trăm linh thạch, thì nên dùng cho bản thân cho tốt, chuyện tu luyện không cần lo, ta sẽ giải quyết cho con.
+“Hừ, đừng lúc nào cũng coi bản tiểu thư là đứa trẻ đơn giản.”
 
-Tạp vụ ngoại môn quá vất vả, hơn nữa phần lớn vô nghĩa, sau này đừng đi làm nữa, ta sẽ cho người dẫn con đi làm nhiệm vụ cốt lõi nội môn.
+Ta không để ý bà ta, mà trực tiếp quay người rời khỏi đây.
 
-Bộ này rất đẹp, không có vấn đề gì, lên đây đi.”
+“Tất cả tránh ra cho bản tiểu thư, đúng rồi, mấy ngươi khoan đã, nơi tỷ kiếm ở đâu?”
 
-Ta vỗ đầu nàng nói, tế phi kiếm kéo bàn tay nhỏ của nàng, cùng đứng lên phi kiếm.
+“A, tiểu, tiểu thư, ở…… ở trong kiếm trang của ngoại cung.”
 
-Tiểu nha đầu này, chắc là mấy hôm trước thấy ta túng thiếu, tưởng ta phá sản rồi?
+Người vừa rồi vẻ mặt bị nghẹn trả lời câu hỏi của ta, ta hài lòng gật đầu, để họ nhường chỗ rồi, đi thẳng về hướng kiếm trang.
 
-Dù sao ta cũng là trưởng lão tông môn mà, có điều không lâu trước lại bị thương đầy mình bên ngoài quả thật tốn không ít.
+Chỉ là một nhân tộc nhỏ nhoi?
 
-Hơn nữa chỉ là gần đây tay quả thật hơi eo hẹp thôi.
+Cũng dám khiêu chiến thiên tài kiếm tu như biểu thúc Dư Nguyên?
 
-“Sư, sư tôn, con có thể ôm người không?
+Xem ra lại thêm một pháo hôi nữa, mấy năm nay chết bao nhiêu nhân tộc, hình như kết cục đều không tốt lắm, vì tộc nhân đều nói họ là kẻ lừa đảo, kẻ trộm.
 
-Con……”
+Ta đã bắt đầu tưởng tượng, nhân tộc sa cơ này sẽ bị đánh thành thế nào nhỉ?
 
-Đồng Nhiễm Nhiễm nhìn hư không dưới chân, bàn tay nhỏ sợ hãi kéo vạt áo ta.
+Biết đâu trực tiếp chết thảm trên trường tỷ thí cũng nên?
 
-“Không sao, trước mặt ta, không cần câu nệ thế.”
+Không, là xác suất rất lớn.
 
-Ta vừa dứt lời, thân thể mềm mại của Đồng Nhiễm Nhiễm đã vùi vào ngực ta.
+Hoặc hắn sẽ quỳ xuống cầu xin thảm hại đến mức nào, máu bắn tung tóe.
 
-Tiểu nha đầu này, trước đây dẫn nàng gặp hung thú mặt chẳng có chút sợ hãi, sao lại sợ độ cao nhỉ?
+Đây chắc chắn sẽ là chuyện rất thú vị, ta cũng nhân đó để biểu thúc Dư Nguyên dẫn ta học kiếm pháp, dù thế nào, ta cũng không muốn ở mãi trong cung điện rách nát này nữa.
 
-Chẳng lẽ giống Sở Nhược Tuyết là giả vờ?
+Ta chạy nhẹ trên lối đi nhà gỗ mờ tối, đi về phía kiếm trang truyền đến tiếng hò hét không xa.
 
-Không, tâm tư nàng không đa dạng thế.
+Ít nhất phụ thân họ vẫn cho phép ta hoạt động trong phạm vi này, hôm nay tùy ý chút đi, ta đã là người có thể chứng kiến cảnh lớn rồi!
 
-Hơn nữa lão già như ta, nàng sao có thể có ý với ta chứ.
-
-Ta trong lòng tự trêu mình vài câu, tăng tốc độ ngự kiếm.
-
-Chỉ nửa canh giờ, chúng ta đã đến nơi.
-
-Đương nhiên, đây là một thành trấn phàm nhân, chúng ta cần hành sự kín đáo, hạ xuống ngoại ô, đơn giản chỉnh trang xong, ta dẫn nàng vào tiểu trấn.
-
-Đây là một tiểu trấn bên dòng suối, khắp nơi trang trí màu đỏ, tiếng người ồn ào, có kịch diễn, có đèn sáng treo cao, còn nhiều nhà đang tổ chức việc vui.
-
-“Năm mới sao, cũng náo nhiệt, có điều tu tiên giả, năm tháng dài rồi, sẽ quên những pháo hoa nhất thời này.
-
-Cũng chỉ vì tuổi thọ ngắn ngủi, cần sự vui mừng thế này để làm đầy đời người thôi.”
-
-Ta thong thả bước trên phố, hứng thú nhìn những thứ này, Đồng Nhiễm Nhiễm thì ngoan ngoãn đi theo bên ta, như thể thành ta đang dẫn nàng ăn lễ.
-
-Khuôn mặt trắng nõn tinh xảo của nàng, rất nhanh đã thu hút sự chú ý của không ít người đi đường.
-
-“Khoan, vị tiểu ca này, xin hỏi thị nữ này của huynh…… có bán không?”
-
-Đột nhiên, một người đàn ông trung niên mắt nhỏ chặn đường ta, vẻ mặt nịnh nọt hỏi ta.
-
-“Ta……”
-
-Đồng Nhiễm Nhiễm vẻ mặt uất ức, vừa định mở miệng, lại nhìn sang ta.
-
-“Nàng không phải thị nữ, còn nữa, ngươi dẫn mấy người phía sau là định cưỡng mua cưỡng bán sao?”
-
-“Hề hề, chúng ta nói chuyện đàng hoàng mà, thật sự không được, ta cũng không muốn đi đến bước đó…… phụt!”
-
-Hắn chưa nói hết, ta một quyền vung lên, khống chế lực đạo, đánh hắn phế hẳn mà không phát ra tiếng động lớn.
-
-Còn mấy tên đả thủ sau lưng hắn thấy cảnh này, đương nhiên không thể khoanh tay đứng nhìn, ta cũng định tùy ý dạy dỗ chúng một trận.
-
-“Ưm.”
-
-“A.”
+“Cộp cộp……”
 
 “……”
 
-Chưa đợi ta ra tay, Đồng Nhiễm Nhiễm đã bước lên giải quyết mấy người còn lại, lực đạo ra tay đều khống chế rất tốt, vừa đủ đánh chúng nửa thân bất toại.
+Càng đến gần vệt sáng phía trước, tiếng vang lớn và tiếng hò hét cũng truyền đến tai ta.
 
-“Các ngươi cũng xứng làm bẩn tay sư tôn!?”
+Ta chỉ cảm thấy tim mình đập nhanh, máu đang sôi trào.
 
-Nàng túm cổ áo một người, không biết đang nói gì, vung nắm tay nhỏ, ta chỉ đành ho nhắc, để nàng theo ta mau rời khỏi đây.
+Lại sắp thấy cảnh máu me như hôm đó rồi, nhân tộc đó rốt cuộc sẽ chết thảm đến đâu?
 
-Rồi ta dẫn nàng một mạch đến tiệm y phục lớn nhất trong trấn.
+Hoặc sẽ thảm hại vật lộn cầu sống đến mức nào?
 
-“Chủ tiệm, đem y váy đắt nhất ra xem.”
+Hô hô ha ha ha, ta rất mong chờ.
 
-“Chủ tiệm, ta muốn nam trang đắt nhất đẹp nhất.”
+“Hô, hô……”
 
-Điều ta không ngờ là, ta và Đồng Nhiễm Nhiễm gần như đồng thời mở miệng, nữ tử ra tiếp đón bị hành vi của chúng ta làm cho ngơ ngác không ít.
+Ta xách váy dài lên bậc thang cuối cùng, rồi bắt đầu chạy trong lối đi cuối cùng.
 
-“Sư tôn, con đã có y phục mới rồi, giờ chỉ mua của người là được, người xem người quanh năm chỉ có bộ hắc y đó, không thì một bộ bạch y.
+Đúng lúc ta đến chỗ rẽ, mọi thứ đột nhiên trở nên đặc biệt tĩnh lặng.
 
-Như vậy sao có tiên tử thích, cứ thế này, cũng chỉ có Nhiễm Nhiễm thích thôi, tuy như vậy cũng rất tốt, nhưng sư tôn vẫn phải ăn mặc cho tử tế.”
+Không một tiếng động……
 
-Đồng Nhiễm Nhiễm hiếm thấy vẻ mặt nghiêm túc, dùng giọng điệu như tranh cãi với ta nói với ta.
+Không, không đúng, ta nghe thấy tiếng bước chân lộp cộp đang đi về phía này.
 
-Rõ ràng từ trước đến nay đều là ta nói một là một.
+Rốt cuộc là ai, đã xảy ra chuyện gì?
 
-“Không lớn không nhỏ, sư tôn nói mua của con là mua của con.
+“……”
 
-Y phục của ta đã đủ dùng, y trang quá rực rỡ nhiều lúc đối với sư tôn ngược lại là gánh nặng.
+Giây sau, ta thấy người đàn ông khiến ta cả đời không quên được.
 
-Mau đem mấy bộ ra cho nàng thay thử.”
+Kẻ khiến ta hận đến nghiến răng, lại luôn nghĩ mãi không thôi.
 
-Ta dùng thủ đao khẽ chạm đầu nàng, dặn dò nhân viên.
+Hắn mặc bộ y phục mỏng manh, ánh mắt lạnh lẽo, sắc mặt âm trầm, đôi mắt đen như vực sâu, hoàn toàn lờ ta đi, đi qua trước mặt ta.
 
-Người sau thấy thế lập tức thành thạo chạy ra kho sau, chẳng bao lâu đã mang ra mấy bộ y trang hoa lệ.
+Ta ngẩng đầu nhìn hắn, hắn thân hình cao lớn, dáng người cũng coi là không tệ, chỉ là khí tức toàn thân khiến ta không nói nên lời.
 
-“Sư tôn, vì sao người không nghe Nhiễm Nhiễm.”
+Nếu hỏi vì sao, trên vạt áo hắn, ta cảm nhận được vệt máu đó có liên hệ huyết thống nhất định với ta.
 
-“Nói thừa, làm gì có sư tôn nghe đồ đệ, mau thay xem, không thì mua hết.”
+“Này, này!
 
-Ta cười khẽ nói, giục Đồng Nhiễm Nhiễm đi thay y phục.
+Ngươi, ngươi là……”
 
-“Trừ phi sư tôn đồng ý người cũng sẽ mua.”
+Ta mở miệng muốn gọi hắn lại, lại phát hiện mình căn bản không phát ra tiếng.
 
-Đồng Nhiễm Nhiễm vẻ mặt không vui nói, cuối cùng ta gật đầu nàng mới đồng ý thay thử.
+Hắn, hắn dựa vào đâu mà lờ ta đi!
 
-Vì có thể lén dùng pháp thuật thay y phục, nên Đồng Nhiễm Nhiễm thử trang rất nhanh.
+Không nói nên lời, nếu không thì xông lên chặn hắn……
 
-Mọi người trong tiệm đều kinh diễm trước ngoại hình của nàng, hình như không ai để ý những điều bất thường này.
+Ta vừa định bước lên, đi vào vệt sáng đó, đã thấy sân tỷ thí nhuộm đỏ máu ở không xa.
 
-“Sư tôn, những y trang này đều đắt quá, Nhiễm Nhiễm vẫn thôi đi.”
+Trên sân khắp nơi là máu và thịt vụn, cuối cùng ta khóa mắt vào cái đầu lâu đứng riêng của biểu thúc.
 
-Thử mấy bộ, Đồng Nhiễm Nhiễm cẩn thận đứng bên ta nói.
+“Ọe……”
 
-Những lời này hình như bị người xem xung quanh không biết từ lúc nào vây đến nghe thấy, lại còn có người giành giúp nàng thanh toán, thật kỳ lạ.
+Một luồng sợ hãi và buồn nôn trào lên trong lòng, ta quỳ nửa người xuống đất, không ngừng nôn khan.
 
-“Công tử, chi bằng người cũng thử bộ kim bạch đạo phục đầu bài của tiệm chúng tôi?”
+Tầm nhìn cũng bắt đầu mơ hồ, chỉ thấy được bóng lưng đen đó rời xa ta.
 
-Nhân viên không biết từ lúc nào đã cầm một bộ nam trang đến bên ta, hình như Đồng Nhiễm Nhiễm cũng đã nói với nàng vài câu.
+“Tiểu thư, tiểu thư?
 
-Có điều, cũng không thể để nàng cứ thay mãi, ta cười khẽ vài câu, liền ra sau màn thay bộ y trang này.
+A, xin, xin lỗi, vị đại nhân này, ta không cố ý đụng ngài.”
 
-Đúng như dự đoán, không có phản ứng kinh thán của mọi người mỗi lần Đồng Nhiễm Nhiễm bước ra.
+“Không sao, ngươi đang tìm một đứa trẻ sao?
 
-“Đẹp, đẹp quá, sư tôn……
+Nàng ở phía sau, các ngươi gia chủ ở đâu, nói với ông ta, ta đã giải quyết xong nội gián rồi.
 
-Thích, thích thích thích thích thích thích……
+Bảo ông ta đưa ta thù lao tương ứng, còn nữa…… nếu tìm thấy một nữ nhân tóc xanh, đừng động vào nàng, lập tức báo cho ta.”
 
-Bao nhiêu linh thạch?!”
+Một đoạn trò chuyện truyền đến từ hướng bóng lưng đó rời đi, ta không ngừng nôn khan, sự không cam trong lòng đã đến cực điểm.
 
-Đồng Nhiễm Nhiễm đôi mắt đẹp trợn to, không biết miệng lẩm bẩm gì, chạy thẳng đến trước mặt nhân viên.
+Đáng ghét đáng ghét đáng ghét!
 
-Nha đầu này, mỗi bộ trên người nàng chỉ vài linh thạch nàng còn chê đắt, bộ này càng không cần nghĩ.
+Đến cuối cùng hắn lại cũng không thèm để ý một chút nào!
 
-“Hôm nay năm mới, chúng tôi giảm giá, chỉ cần tám mươi linh thạch.”
+……
 
-“Đưa cô.”
+Từ ngày đó, gia tộc từ liên tục thất bại ban đầu, biến thành không ngừng khai cương mở cõi, thắng lớn thắng nhỏ trật tự rõ ràng.
 
-Đồng Nhiễm Nhiễm không hiểu sao trực tiếp đặt linh thạch vào tay nhân viên, ta vội bước lên ngăn nàng.
+Đương nhiên, vẫn không đổi là, nhân tộc đó, hoàn toàn không đặt ta vào mắt chút nào.
 
-“Khoan, nha đầu con rốt cuộc đang nghĩ gì vậy, sư tôn có, có linh thạch.
+Đợi đó đợi đó, đợi bản tiểu thư lớn lên!
 
-Haizz, ta cũng không chọn ra con bộ nào đẹp nhất, vậy mua hết đi.
+Có gì mà oai phong.
 
-Nhân viên, bộ này của ta và những bộ nàng vừa thử đều gói lại.”
+Ngôn Quyền?
 
-Ta trả linh thạch cho Đồng Nhiễm Nhiễm, chịu sự phản đối của nàng mua hết y trang.
+Cuối cùng bản tiểu thư mới là chủ nhân của ngươi!
 
-“Công tử, nếu có thể để vị tiểu thư này ở lại tiệm chúng tôi thêm một lát, chúng tôi có thể tặng người mấy bộ miễn phí.”
+Ngươi là quản sự của ta, là của ta, là của bản tiểu thư!
 
-Nhân viên kéo ta nói, lúc này hơn nửa dòng người trong tiệm đều đến xem Đồng Nhiễm Nhiễm, cứ thế này, có thể có người đoán được thân phận tu tiên giả của nàng.
-
-“Không cần.”
-
-Ta lập tức đáp, trả xong linh thạch, dẫn Đồng Nhiễm Nhiễm mau rời khỏi đây.
-
-“Sư tôn, vì sao mua nhiều thế cho con, mà mình lại chỉ mua một bộ.”
-
-Đồng Nhiễm Nhiễm không vui nói, ta không hiểu sao tâm trạng nàng không tốt, rõ ràng bộ của ta là đắt nhất.
-
-“Vì những cái đó đều rất hợp con, hợp ta thì không có nhiều.”
-
-Ta qua loa đáp, thật ra nha đầu này mặc gì cũng không tệ.
-
-“Nhiễm, Nhiễm Nhiễm?
-
-Thật là con sao?”
-
-Đột nhiên một giọng gấp gáp từ phía sau truyền đến.
-
-Ta và Đồng Nhiễm Nhiễm quay người nhìn, là một tu sĩ Trúc Cơ kỳ để râu nhỏ.
-
-Nhìn y phục, hình như là của một tiểu tông môn gần đây.
-
-“Ông là?”
-
-Đồng Nhiễm Nhiễm nghi hoặc nói, người đàn ông đó lại lấy ra một miếng ngọc bội cùng loại với ngọc bội bên hông nàng.
-
-“Ta là thúc thúc Đồng Minh của con, trận đồ sát năm đó, phụ thân con đã sớm dự liệu, truyền tin bảo ta đến cứu, kết quả tin đến muộn, ta, ta chạy đến thì, đã……”
-
-Người đàn ông nói được nửa chừng, rất đau lòng quỳ xuống đất, đầy mắt nước mắt và hối hận.
-
-Ta thì lặng lẽ nhìn hắn, hắn có nói dối hay không thật ra đều không sao, với tu vi này của hắn, có đến cũng vô ích.
-
-Tu tiên giả duy nhất của gia tộc, bao năm rồi vẫn là Trúc Cơ kỳ……
-
-“Con……”
-
-Đồng Nhiễm Nhiễm có chút do dự, không biết nên nói gì.
-
-“Vừa nãy ta đi ngang qua đây, ngọc bội đột nhiên có phản ứng, ta liền biết, con vẫn còn sống, Nhiễm Nhiễm đi với ta đi, với thiên phú của con, chắc chắn có thể bái vào nội môn tông môn của ta!
-
-Người đàn ông này là ai, hắn bắt nạt con sao?
-
-Đi với ta, ta nhất định bảo vệ con thật tốt.”
-
-Người đàn ông lau nước mắt nói, ném cho ta ánh mắt thù địch.
-
-Hừ, đầy miệng lời dối trá, hơn nữa tu vi còn chưa cao bằng Đồng Nhiễm Nhiễm bây giờ, nói gì bảo vệ, bức tin năm đó e là nhận được rồi, chỉ là không dám đi thôi?
-
-“Nhiễm Nhiễm, tự con quyết định đi.”
-
-Ta khoanh tay đơn giản nói.
-
-“Sư tôn……có thể phiền người đi trước không?”
-
-Đồng Nhiễm Nhiễm quay lưng lại, thấp giọng nói.
-
-“Được, a…… ta xem, tòa nhà ở trung tâm kia rất cao, ta sẽ đợi ở đó ngắm pháo hoa, con quyết định xong là được, ngắm pháo hoa xong ta sẽ rời đi.”
-
-Ta nói xong, liền rời khỏi đây, trời cũng đã chiều tối, nghe nói pháo hoa năm mới sắp được đốt trong trấn.
-
-Ít nhất còn có một người thân, có lẽ đối với nàng cũng là chuyện tốt.
-
-Cũng hơn ta, một sư tôn vô trách nhiệm.
-
-Cuối cùng, ta rốt cuộc vẫn sẽ là một mình.
-
-Một mình cũng có cái tốt của một mình thôi, ta cầm bình rượu phàm, nhìn dòng người náo nhiệt bên dưới, cùng nhau đếm ngược, trong lòng lại có cảm giác kỳ lạ.
-
-Thật kỳ lạ, lâu lắm không có cảm khái thế này.
-
-Cảm giác bị thế giới bỏ rơi.
-
-“Ba!”
-
-Mọi người bắt đầu đếm ngược.
-
-“Hai!”
-
-“Hai……”
-
-Ta cũng học đếm ngược, rốt cuộc là cầu phúc có ích, hay dựa vào bản thân đi hết con đường đạo có ích đây.
-
-“Một!”
-
-“Một……”
-
-“Một, sư tôn, pháo hoa sắp đến rồi nha.”
-
-Đột nhiên, một giọng nói quen thuộc từ bên cạnh truyền đến, trùng với giọng ta, rồi ôm chặt một cánh tay ta.
-
-“Đùng!”
-
-Khắp nơi pháo hoa nở rộ, ta cùng sự bầu bạn của Đồng Nhiễm Nhiễm, trải qua một ngày lễ năm mới.
-
-Trong sự bầu bạn……
-
-“Con, quyết định xong rồi?”
-
-“Ừm, Nhiễm Nhiễm thật ra chỉ muốn hỏi riêng Minh thúc vài chuyện thôi mà.
-
-Vốn đã không có ấn tượng gì về ông ấy, những chuyện đó cũng đã xảy ra rồi……
-
-Khoan, chẳng lẽ sư tôn tưởng con sẽ đi với ông ấy sao?”
-
-Đồng Nhiễm Nhiễm gật đầu đáp, nhưng nói đến sau lại không vui.
-
-“Haizz, sao có thể, xem, ngọc trâm mua cho con, ta sao lại không biết đồ đệ của ta sẽ chọn ai chứ?”
-
-Ta lấy từ trong ngực ra món quà năm mới đã chuẩn bị từ lâu, cài lên đầu nàng.
-
-Dù sao nhìn thế nào theo ta cũng có tiền đồ hơn, tuy ta không tốt.
-
-Hơn nữa, thật ra nguyên nhân chính xác khiến linh thạch của ta cạn đáy, làm nàng hiểu lầm ta không có linh thạch…… đều là vì mua cho nàng cây ngọc trâm pháp khí giá một triệu linh thạch này.
-
-Như vậy lúc ta không có ở đây, ngọc trâm có thể thay ta bảo vệ nàng chút.
-
-Chỉ có lừa nàng thế này, nói là mua tùy tiện, nàng mới không băn khoăn nhỉ.
-
-Qua ít ngày, ta chắc phải xuất phát đi tìm thiên chi rồi.
-
-Lại vì chuyện của mình, để nàng ở lại một mình.
-
-Thật ích kỷ nhỉ ta, chắc xa không bằng bà già Bạch Diệu Diệu đó.
-
-Ha, sao lại hơi nhớ nàng rồi nhỉ.
+Chắc chắn, sẽ chứng minh cho tất cả mọi người thấy.
